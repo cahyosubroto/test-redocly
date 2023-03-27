@@ -3,13 +3,13 @@ swagger: "2.0"
 info:
   version: 0.0.1
   title: Blockdaemon Wallet Interface.
-  termsOfService: https://sepior-wallet.azurewebsites.net/docs
+  termsOfService: https://cahyosubroto.github.io/test-redocly/
   contact:
     name: Kasper Lyneborg Damgaard
     email: kld@mjolner.dk
   x-logo:
     url: 'https://i.postimg.cc/gJbY9cFK/logo.png'
-host: sepior-wallet.azurewebsites.net
+host: https://cahyosubroto.github.io/test-redocly/
 basePath: /system/api/
 schemes:
 - https
@@ -24,7 +24,7 @@ paths:
     get:
       tags:
       - Asset
-      summary: Get all assets.
+      summary: Get All Assets
       description: Retrieves a summary of all assets including the asset type, total balance and amount in USD.
       operationId: getAllAssetsSummary
       consumes:
@@ -55,7 +55,7 @@ paths:
     post:
       tags:
       - Asset
-      summary: Add an additional address to an asset
+      summary: Add an Additional Address to an Asset
       description: |-
         Adds an address to the asset uniquely specified by VaultId and Asset.
         The name specified for the address must be unique.
@@ -115,7 +115,7 @@ paths:
     post:
       tags:
       - Asset
-      summary: Add support for an additional ERC20 asset
+      summary: Add Support for an Additional ERC20 Asset
       description: |-
         Adds support for new ERC20 asset.
         Be aware that this endpoint will only work for ethereum based ERC20 assets.
@@ -174,7 +174,7 @@ paths:
     get:
       tags:
       - Asset
-      summary: Get all assets and their exchange rate.
+      summary: Get All Assets and Their Exchange Rate
       description: |-
         Retrieves a list of all assets and their respective exchange rate. The list is in descending order based on the USDRate.
 
@@ -265,7 +265,7 @@ paths:
     post:
       tags:
       - Asset
-      summary: Set Exchange rate of asset
+      summary: Set Exchange Rate of Asset
       description: |-
         Sets the exchange rate of asset specified by asset.
         The Rate should be set in USD.
@@ -351,7 +351,7 @@ paths:
     get:
       tags:
       - Asset
-      summary: Get a single asset.
+      summary: Get a Single Asset
       description: Retrieves the details of a single asset including the vaults, under which the asset is present.
       operationId: getAssetDetails
       consumes:
@@ -396,7 +396,7 @@ paths:
     get:
       tags:
       - Configuration
-      summary: View config
+      summary: View Config
       description: Returns the configuration of the instance to be used by the frontend to dynamically configure it.
       operationId: viewConfig
       produces:
@@ -411,7 +411,7 @@ paths:
     get:
       tags:
       - Policy
-      summary: Get all groups
+      summary: Get All Groups
       description: Retrieves all groups. If no sorting parameters are given, the default sorting is ascending by name.
       operationId: getAllGroups
       consumes:
@@ -474,7 +474,7 @@ paths:
     post:
       tags:
       - Policy
-      summary: Create a new group
+      summary: Create a New Group
       description: |-
         Creates a new group with a given name.
         Returns the Id of the group.
@@ -519,7 +519,7 @@ paths:
     get:
       tags:
       - Policy
-      summary: Get list of groupable users
+      summary: Get List of Groupable Users
       description: Retrieves a list of users who are in a state that allow for them to be included in a group.
       operationId: getGroupableUsers
       consumes:
@@ -554,7 +554,7 @@ paths:
     get:
       tags:
       - Policy
-      summary: Get group
+      summary: Get Group
       description: Retrieves a single group by UUID in request URL.
       operationId: getGroup
       consumes:
@@ -600,7 +600,7 @@ paths:
     post:
       tags:
       - Policy
-      summary: Add user(s) to a group
+      summary: Add User(s) to a Group
       description: Adds user(s) to a specific group, to be used in policies.
       operationId: addUser
       consumes:
@@ -654,7 +654,7 @@ paths:
     post:
       tags:
       - Policy
-      summary: Remove user(s) from a group
+      summary: Remove User(s) from a Group
       description: Removes a user from a specific group.
       operationId: removeUser
       consumes:
@@ -737,7 +737,7 @@ paths:
     get:
       tags:
       - Notification
-      summary: Get recent notifications
+      summary: Get Recent Notifications
       description: Retrieves notifications from the last 7 days.
       operationId: getNotifications
       produces:
@@ -766,7 +766,7 @@ paths:
     post:
       tags:
       - Notification
-      summary: Set last seen notifications
+      summary: Set Last Seen Notifications
       description: Sets the time when the calling user has last seen notifications (aka when the bell icon is pressed).
       operationId: setLastSeen
       produces:
@@ -869,7 +869,7 @@ paths:
     get:
       tags:
       - Staking
-      summary: Get all assets available for staking.
+      summary: Get All Assets Available for Staking
       description: Retrieves a summary of all assets including the asset type, total balance and amount in USD.
       operationId: GetAllStakingAssets
       consumes:
@@ -904,7 +904,7 @@ paths:
     post:
       tags:
       - Staking
-      summary: Stake funds
+      summary: Stake Funds
       description: Stakes funds from one vault (of a certain asset type) and enables withdrawal to the given address.
       operationId: stake
       consumes:
@@ -962,7 +962,7 @@ paths:
     post:
       tags:
       - User
-      summary: Enable a system user
+      summary: Enable a System User
       description: |-
         Enables a system user already registered in the mpa based on ID and public wallet key.
         Returns the ApiKey of the user.
@@ -1015,7 +1015,7 @@ paths:
     get:
       tags:
       - User
-      summary: Get all importable system users from the mpa
+      summary: Get All Importable System Users from the MPA
       description: Retrieves all importable system users from the mpa.
       operationId: getAllImportableSystemUsers
       consumes:
@@ -1046,7 +1046,7 @@ paths:
     post:
       tags:
       - User
-      summary: Disable a system user
+      summary: Disable a System User
       description: Disables a system user from the Bloackdaemon wallet.
       operationId: disableSystemUserEndpoint
       consumes:
@@ -1101,7 +1101,7 @@ paths:
     get:
       tags:
       - Transaction
-      summary: Get transactions
+      summary: Get Transactions
       description: Retrieves all transactions for the given page and page size.
       operationId: showTransactions
       consumes:
@@ -1317,8 +1317,8 @@ paths:
     get:
       tags:
       - Transaction
-      summary: Get the Blockchain Progress, meaning the blockchains current block height, and what the highest block we have seen is
-      description: With this endpoint we can see if we are behind the current block.
+      summary: Get the Blockchain Progress
+      description: With this endpoint, we can see the blockchains current block height and the highest block we have seen to determine if we are behind the current block.
       operationId: getBlockchainProgress
       consumes:
       - application/json
@@ -1362,7 +1362,7 @@ paths:
     get:
       tags:
       - Transaction
-      summary: Export all transactions as csv
+      summary: Export All Transactions as CSV
       description: Retrieves all Export all transactions as csv.
       operationId: ExportTransactions
       consumes:
@@ -1568,7 +1568,7 @@ paths:
     post:
       tags:
       - Transaction
-      summary: Freeze a transaction-endpoint
+      summary: Freeze a Transaction-endpoint
       description: Freezes transaction-endpoints, not allowing for any more transactions.
       operationId: freeze
       consumes:
@@ -1616,7 +1616,7 @@ paths:
     post:
       tags:
       - Transaction
-      summary: Transfer funds
+      summary: Transfer Funds
       description: |-
         Transfers funds from one vault (of a certain type of asset) to an internal vault or an external address.
 
@@ -1679,7 +1679,7 @@ paths:
     get:
       tags:
       - Transaction
-      summary: Gets data needed to make transfers
+      summary: Gets Data Needed to Make Transfers
       description: |-
         It will always return a list of all Assets.
 
@@ -1735,7 +1735,7 @@ paths:
     post:
       tags:
       - Transaction
-      summary: Unfreeze a transaction-endpoint
+      summary: Unfreeze a Transaction-endpoint
       description: Unfreezes transaction-endpoints, once again allowing transactions to pass through.
       operationId: unfreeze
       consumes:
@@ -1783,7 +1783,7 @@ paths:
     get:
       tags:
       - Transaction
-      summary: Get a transaction
+      summary: Get a Transaction
       description: Retrieves a single transaction with the provided TransactionId.
       operationId: getTransaction
       consumes:
@@ -1829,7 +1829,7 @@ paths:
     get:
       tags:
       - User
-      summary: Retrieve all users
+      summary: Retrieve All Users
       description: "Retrieves all the users within the Blockdaemon wallet."
       operationId: getAllUsers
       consumes:
@@ -1860,7 +1860,7 @@ paths:
     get:
       tags:
       - User
-      summary: Get role and status of user
+      summary: Get Role and Status of User
       description: Retrieves the role and status of user whose ID is in the token.
       operationId: getUserInfo
       consumes:
@@ -1899,7 +1899,7 @@ paths:
     post:
       tags:
       - User
-      summary: Create a new user
+      summary: Create a New User
       description: |-
         Creates a new user from IDP User ID and a given name.
         Returns the UserId of the user.
@@ -1952,7 +1952,7 @@ paths:
     post:
       tags:
       - User
-      summary: Reset a user
+      summary: Reset a User
       description: "Resets a user information."
       operationId: resetUserEndpoint
       consumes:
@@ -1989,7 +1989,7 @@ paths:
     post:
       tags:
       - User
-      summary: Revoke a user
+      summary: Revoke a User
       description: Changes the status of a user to revoked. Only possible if your user is admin.
       operationId: revokeUserEndpoint
       consumes:
@@ -2044,7 +2044,7 @@ paths:
     get:
       tags:
       - Vault
-      summary: Get all unhidden vaults and count of hidden vaults
+      summary: Get All Unhidden Vaults and Count of Hidden Vaults
       operationId: getVaults
       consumes:
       - application/json
@@ -2080,7 +2080,7 @@ paths:
     get:
       tags:
       - Vault
-      summary: Get all assets.
+      summary: Get All Assets
       description: Retrieves all assets supported in the system, returns the abbreviation and name of every asset.
       operationId: getAllAssets
       consumes:
@@ -2111,7 +2111,7 @@ paths:
     post:
       tags:
       - Vault
-      summary: Create a new vault
+      summary: Create a New Vault
       description: |-
         Creates a new vault with a given name. Name must only consist of alphanumeric characters.
         Returns the VaultId of the vault.
@@ -2212,7 +2212,7 @@ paths:
     get:
       tags:
       - Vault
-      summary: Get vault
+      summary: Get Vault
       description: Retrieves a single vault by UUID in request URL.
       operationId: getVault
       consumes:
@@ -2258,7 +2258,7 @@ paths:
     post:
       tags:
       - Vault
-      summary: Add an asset to a vault
+      summary: Add an Asset to a Vault
       description: |-
         Adds an asset of type 'Asset' to the vault specified by 'VaultId'.
         A vault can only contain a single asset of each asset type.
@@ -2323,7 +2323,7 @@ paths:
       tags:
       - Vault
       - Asset
-      summary: Get the addresses of an asset
+      summary: Get the Addresses of an Asset
       description: Retrieves the addresses of the asset with assettype "asset" under the vault specified by the "id" parameter.
       operationId: getAddressOfAsset
       consumes:
@@ -2421,7 +2421,7 @@ paths:
     post:
       tags:
       - Vault
-      summary: Unhide vault
+      summary: Unhide Vault
       description: Unhides a vault.
       operationId: unHideVault
       consumes:
@@ -2469,7 +2469,7 @@ paths:
     get:
       tags:
       - Websocket
-      summary: Subscribe to async updates
+      summary: Subscribe to Async Updates
       description: |-
         NB: This endpoint is described as a normal REST API call, but it is actually a websocket connection, so access it like that.
         The models can be used still since they will be correct
@@ -2502,7 +2502,7 @@ paths:
     get:
       tags:
       - Health
-      summary: Enquire the server of it's system
+      summary: Enquire the Server System
       description: Returns if the server is healthy or not. In the longer run, this should return a more finely tuned model
       operationId: system
       produces:
@@ -2521,7 +2521,7 @@ paths:
     post:
       tags:
       - SystemAPI
-      summary: Add an address synchronously
+      summary: Add an Address Synchronously
       description: "Adds an address to an existing asset of type 'Asset' in the account specified by 'AccountName'.<br/>\n\nThis endpoint can only be used by a System user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/accounts/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
       operationId: addAddressSynchronously
       consumes:
@@ -2578,7 +2578,7 @@ paths:
     post:
       tags:
       - SystemAPI
-      summary: Add an asset to an account synchronously
+      summary: Add an Asset to an Account Synchronously
       description: "Adds an asset of type 'Asset' to the account specified by 'Name'.<br/>\nAn account can only contain a single asset of each asset type.<br/>\n\nThis endpoint can only be used by a System user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/account/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
       operationId: addAssetSynchronously
       consumes:
@@ -2635,7 +2635,7 @@ paths:
     post:
       tags:
       - SystemAPI
-      summary: Create a new account synchronously
+      summary: Create a New Account Synchronously
       description: "Creates a new account with a given name.<br/>\nAccounts created by this endpoint are hidden.\nReturns the Id of the account.<br/>\n\nThis endpoint can only be used by a system user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/account/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
       operationId: createAccountSynchronously
       consumes:
@@ -2684,7 +2684,7 @@ paths:
     post:
       tags:
       - SystemAPI
-      summary: Transfer funds synchronously
+      summary: Transfer Funds Synchronously
       description: "Transfers funds from one account (of a certain type of asset) to an internal account or external address<br/>\n\nThis endpoint can only be used by a System user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/accounts/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
       operationId: transferFundsSynchronously
       consumes:
