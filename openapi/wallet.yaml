@@ -1,0 +1,6274 @@
+---
+swagger: "2.0"
+info:
+  version: 0.0.1
+  title: Blockdaemon Wallet Interface.
+  termsOfService: https://sepior-wallet.azurewebsites.net/docs
+  contact:
+    name: Kasper Lyneborg Damgaard
+    email: kld@mjolner.dk
+  x-logo:
+    url: 'https://i.postimg.cc/gJbY9cFK/logo.png'
+host: sepior-wallet.azurewebsites.net
+basePath: /system/api/
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+security:
+- bearer: []
+paths:
+  /api/assets:
+    get:
+      tags:
+      - Asset
+      summary: Get all assets.
+      description: Retrieves a summary of all assets including the asset type, total balance and amount in USD.
+      operationId: getAllAssetsSummary
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetSummaryOfAllAssetsResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/assets/addAddress:
+    post:
+      tags:
+      - Asset
+      summary: Add an additional address to an asset
+      description: |-
+        Adds an address to the asset uniquely specified by VaultId and Asset.
+        The name specified for the address must be unique.
+        Be aware that this endpoint will not work for ethereum assets, since it is only possible to have a single address for such assets.
+      operationId: addAddress
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/AddAddressRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid, InvalidAddressName, InvalidAsset, MultipleAddressesNotAllowed
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/assets/erc20:
+    post:
+      tags:
+      - Asset
+      summary: Add support for an additional ERC20 asset
+      description: |-
+        Adds support for new ERC20 asset.
+        Be aware that this endpoint will only work for ethereum based ERC20 assets.
+      operationId: addERC20Asset
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/AddERC20AssetRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidAssetIcon, InvalidAssetContract, ExchangeRateUpdateNegativeRate, ExchangeRateUpdateMinMaxMismatch, ExchangeRateUpdateMixRangeAndRate
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/assets/getExchangeRates:
+    get:
+      tags:
+      - Asset
+      summary: Get all assets and their exchange rate.
+      description: |-
+        Retrieves a list of all assets and their respective exchange rate. The list is in descending order based on the USDRate.
+
+        If the asset does not have an exchange rate, USDRate will be set to null.
+        If the asset has a pending exchange rate update the PendingUSDRate field will be set, if not it will be null.
+      operationId: getAllExchangeRates
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetAllExchangeRatesResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/assets/retryAddAddress:
+    post:
+      tags:
+      - Asset
+      summary: Retry Add Address
+      description: Given a failed address, this will attempt to generate the address again using the given parameters.
+      operationId: retryAddAddress
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: false
+        schema:
+          $ref: '#/definitions/RetryAddAddressRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid, InvalidAddressName
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/assets/setExchangeRate:
+    post:
+      tags:
+      - Asset
+      summary: Set Exchange rate of asset
+      description: |-
+        Sets the exchange rate of asset specified by asset.
+        The Rate should be set in USD.
+        You can either set a fixed rate or set a range the rate is allowed to move in.
+        If the range is set, the rate will be set by querying 3'rd parties and used so long they are in the given range.
+      operationId: setExchangeRate
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: false
+        schema:
+          $ref: '#/definitions/SetExchangeRateRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: ExchangeRateUpdateChangesMissing, ExchangeRateUpdateAssetMissing, ExchangeRateUpdateNoCreator, ExchangeRateUpdateNegativeRate, ExchangeRateUpdateIsInProgress, ExchangeRateUpdateNotANumber, ExchangeRateUpdateMinMaxMismatch, ExchangeRateUpdateMixRangeAndRate
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/assets/{Abbreviation}/icon:
+    get:
+      tags:
+      - Asset
+      summary: Get Asset Icon
+      description: |-
+        Returns the image corresponding to the asset abbreviation given.
+
+        If the image is in svg format the MIME type with change to "image/svg+xml".
+      operationId: getAssetIcon
+      produces:
+      - image/svg+xml
+      - image/png
+      parameters:
+      - name: Abbreviation
+        in: path
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            type: array
+            items:
+              type: integer
+              format: uint8
+  /api/assets/{Asset}:
+    get:
+      tags:
+      - Asset
+      summary: Get a single asset.
+      description: Retrieves the details of a single asset including the vaults, under which the asset is present.
+      operationId: getAssetDetails
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Asset
+        in: path
+        required: true
+        type: string
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetAssetResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidAsset
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/config:
+    get:
+      tags:
+      - Configuration
+      summary: View config
+      description: Returns the configuration of the instance to be used by the frontend to dynamically configure it.
+      operationId: viewConfig
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/ConfigResponse'
+  /api/groups:
+    get:
+      tags:
+      - Policy
+      summary: Get all groups
+      description: Retrieves all groups. If no sorting parameters are given, the default sorting is ascending by name.
+      operationId: getAllGroups
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: order_by
+        in: query
+        description: |2-
+
+          NAME Name
+          DATE Date
+        required: false
+        type: string
+        enum:
+        - NAME
+        - DATE
+        x-go-enum-desc: |-
+          NAME Name
+          DATE Date
+        x-go-name: OrderBy
+      - name: order_direction
+        in: query
+        required: false
+        type: string
+        enum:
+        - ASC
+        - DESC
+        x-go-enum-desc: |-
+          ASC Ascending
+          DESC Descending
+        x-go-name: OrderDirection
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetGroupsResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidOrderDirectionQuery, InvalidOrderByQuery
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/groups/createGroup:
+    post:
+      tags:
+      - Policy
+      summary: Create a new group
+      description: |-
+        Creates a new group with a given name.
+        Returns the Id of the group.
+      operationId: createGroup
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/CreateGroupRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GroupCreatedResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGroupName
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/groups/groupableUsers:
+    get:
+      tags:
+      - Policy
+      summary: Get list of groupable users
+      description: Retrieves a list of users who are in a state that allow for them to be included in a group.
+      operationId: getGroupableUsers
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetGroupableUsersResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/groups/{Id}:
+    get:
+      tags:
+      - Policy
+      summary: Get group
+      description: Retrieves a single group by UUID in request URL.
+      operationId: getGroup
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetGroupResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/groups/{Id}/addUsers:
+    post:
+      tags:
+      - Policy
+      summary: Add user(s) to a group
+      description: Adds user(s) to a specific group, to be used in policies.
+      operationId: addUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/AddUsersToGroupRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: NoUsersInRequest, InvalidGuid, UserAlreadyInGroup, UserNotGroupable
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/groups/{Id}/removeUser:
+    post:
+      tags:
+      - Policy
+      summary: Remove user(s) from a group
+      description: Removes a user from a specific group.
+      operationId: removeUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/RemoveUserFromGroupRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/masterKey/backup:
+    get:
+      tags:
+      - MasterKey
+      summary: Backup Master Key
+      description: Synchronously retrieves a backup of the master key used in the MPA.
+      operationId: backup
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/File'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/notifications:
+    get:
+      tags:
+      - Notification
+      summary: Get recent notifications
+      description: Retrieves notifications from the last 7 days.
+      operationId: getNotifications
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/inline_response_200'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/notifications/setLastSeen:
+    post:
+      tags:
+      - Notification
+      summary: Set last seen notifications
+      description: Sets the time when the calling user has last seen notifications (aka when the bell icon is pressed).
+      operationId: setLastSeen
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/policy/transactionPolicyList:
+    get:
+      tags:
+      - Policy
+      summary: Fetch the Transaction Policy List
+      description: Retrieves the entire transaction policy list, excluding hidden accounts.
+      operationId: getTransactionPolicyList
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/TransactionPolicyListResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+    put:
+      tags:
+      - Policy
+      summary: Update Transaction Policy List
+      description: Updates the entire policy list for transactions.
+      operationId: updateTransactionPolicyList
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: false
+        schema:
+          $ref: '#/definitions/UpdateTransactionPolicyListRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidPolicyMinAmount, InvalidPolicyDestinationType, PolicyDestinationEmpty, InvalidPolicyNoOfApprovals, InvalidPolicyNoOfApprovalExpressions
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/staking/assets:
+    get:
+      tags:
+      - Staking
+      summary: Get all assets available for staking.
+      description: Retrieves a summary of all assets including the asset type, total balance and amount in USD.
+      operationId: GetAllStakingAssets
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Asset
+        in: query
+        required: false
+        type: string
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/StakingInfo'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/staking/stake:
+    post:
+      tags:
+      - Staking
+      summary: Stake funds
+      description: Stakes funds from one vault (of a certain asset type) and enables withdrawal to the given address.
+      operationId: stake
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: false
+        schema:
+          $ref: '#/definitions/StakingRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/StakingResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidDestinationVaultId, InvalidSenderVaultId, InvalidPriority, InvalidAsset, InvalidTransferFee, InvalidTransferAmount, InvalidDestination, InvalidERC20Gross
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/systems/enable:
+    post:
+      tags:
+      - User
+      summary: Enable a system user
+      description: |-
+        Enables a system user already registered in the mpa based on ID and public wallet key.
+        Returns the ApiKey of the user.
+      operationId: enableSystemUserEndpoint
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/EnableSystemUserRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/SystemUserEnabledResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidUserRole, InvalidIdpUserId, InvalidUserName, InvalidCallbackURL, InvalidPublicKey
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/systems/importableSystemUsers:
+    get:
+      tags:
+      - User
+      summary: Get all importable system users from the mpa
+      description: Retrieves all importable system users from the mpa.
+      operationId: getAllImportableSystemUsers
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetImportableSystemUsersResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/systems/{Id}/disable:
+    post:
+      tags:
+      - User
+      summary: Disable a system user
+      description: Disables a system user from the Bloackdaemon wallet.
+      operationId: disableSystemUserEndpoint
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        description: Description
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/DisableSystemUserResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions:
+    get:
+      tags:
+      - Transaction
+      summary: Get transactions
+      description: Retrieves all transactions for the given page and page size.
+      operationId: showTransactions
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: page
+        in: query
+        required: true
+        type: integer
+        format: int64
+        x-go-name: Page
+      - name: pageSize
+        in: query
+        required: true
+        type: integer
+        format: int64
+        x-go-name: Pagesize
+      - name: order_by
+        in: query
+        required: false
+        type: string
+        enum:
+        - date
+        - crypto
+        x-go-enum-desc: |-
+          date Timestamp
+          crypto Amount
+        x-go-name: OrderBy
+      - name: order_direction
+        in: query
+        required: false
+        type: string
+        enum:
+        - ASC
+        - DESC
+        x-go-enum-desc: |-
+          ASC Ascending
+          DESC Descending
+        x-go-name: OrderDirection
+      - name: hash
+        in: query
+        required: false
+        type: string
+        x-go-name: Hash
+      - name: start_date
+        in: query
+        required: false
+        type: string
+        format: date-time
+        x-go-name: StartDate
+      - name: end_date
+        in: query
+        required: false
+        type: string
+        format: date-time
+        x-go-name: EndDate
+      - name: assets
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: Assets
+      - name: source_acc
+        in: query
+        description: SourceAcc denotes the vault ID's to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+          format: uuid
+        collectionFormat: multi
+        x-go-name: SourceAccountIds
+      - name: source_ext
+        in: query
+        description: SourceExt denotes the external addresses to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: SourceExternalAddresses
+      - name: destination_acc
+        in: query
+        description: DestinationAcc denotes the vault ID's to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+          format: uuid
+        collectionFormat: multi
+        x-go-name: DestinationAccountIds
+      - name: destination_ext
+        in: query
+        description: DestinationExt denotes the external addresses to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: DestinationExternalAddresses
+      - name: status
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - New
+          - AwaitingConfirmation
+          - AwaitingApproval
+          - Approved
+          - Pooled
+          - Stabilizing
+          - Stable
+          - Rejected
+          - Failed
+        collectionFormat: multi
+        x-go-name: Status
+      - name: created_by
+        in: query
+        description: CreatedBy denotes the users via the unique idpId.
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: CreatedBy
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/ShowTransactionsResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidSenderVaultId, InvalidDestinationVaultId, InvalidTransactionState, InvalidStartDate, InvalidEndDate, InvalidOrderDirectionQuery, InvalidOrderByQuery, InvalidPageQuery, InvalidPageSizeQuery, InvalidAsset
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/assetDetails/{Asset}:
+    get:
+      tags:
+      - Transaction
+      summary: Get Details of Specific Asset
+      description: Retrieves the details of a specific asset.
+      operationId: GetTransferAssetDetails
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Asset
+        in: path
+        required: true
+        type: string
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetTransferAssetDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/blockchainProgress/{Asset}:
+    get:
+      tags:
+      - Transaction
+      summary: Get the Blockchain Progress, meaning the blockchains current block height, and what the highest block we have seen is
+      description: With this endpoint we can see if we are behind the current block.
+      operationId: getBlockchainProgress
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Asset
+        in: path
+        required: true
+        type: string
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/BlockchainProgressResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidAsset
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/export.csv:
+    get:
+      tags:
+      - Transaction
+      summary: Export all transactions as csv
+      description: Retrieves all Export all transactions as csv.
+      operationId: ExportTransactions
+      consumes:
+      - application/json
+      produces:
+      - text/csv
+      parameters:
+      - name: order_by
+        in: query
+        description: |2-
+
+          date Timestamp.
+          crypto Amount.
+        required: false
+        type: string
+        enum:
+        - date
+        - crypto
+        x-go-enum-desc: |-
+          date Timestamp
+          crypto Amount
+        x-go-name: OrderBy
+      - name: order_direction
+        in: query
+        required: false
+        type: string
+        enum:
+        - ASC
+        - DESC
+        x-go-enum-desc: |-
+          ASC Ascending
+          DESC Descending
+        x-go-name: OrderDirection
+      - name: hash
+        in: query
+        required: false
+        type: string
+        x-go-name: Hash
+      - name: start_date
+        in: query
+        required: false
+        type: string
+        format: date-time
+        x-go-name: StartDate
+      - name: end_date
+        in: query
+        required: false
+        type: string
+        format: date-time
+        x-go-name: EndDate
+      - name: assets
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: Assets
+      - name: source_acc
+        in: query
+        description: SourceAcc denotes the vault ID's to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+          format: uuid
+        collectionFormat: multi
+        x-go-name: SourceAccountIds
+      - name: source_ext
+        in: query
+        description: SourceExt denotes the external addresses to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: SourceExternalAddresses
+      - name: destination_acc
+        in: query
+        description: DestinationAcc denotes the vault ID's to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+          format: uuid
+        collectionFormat: multi
+        x-go-name: DestinationAccountIds
+      - name: destination_ext
+        in: query
+        description: DestinationExt denotes the external addresses to filter on.
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: DestinationExternalAddresses
+      - name: status
+        in: query
+        required: false
+        type: array
+        items:
+          type: string
+          enum:
+          - New
+          - AwaitingConfirmation
+          - AwaitingApproval
+          - Approved
+          - Pooled
+          - Stabilizing
+          - Stable
+          - Rejected
+          - Failed
+        collectionFormat: multi
+        x-go-name: Status
+      - name: created_by
+        in: query
+        description: CreatedBy denotes the users via the unique idpId.
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-go-name: CreatedBy
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/File'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidSenderVaultId, InvalidDestinationVaultId, InvalidTransactionState, InvalidStartDate, InvalidEndDate, InvalidOrderDirectionQuery, InvalidOrderByQuery, InvalidAsset
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/filterDetails:
+    get:
+      tags:
+      - Transaction
+      summary: Get Filter Details
+      description: |-
+        Details needed to fill out filter.
+        The details includes a list of all users, assets and vaults in the system.
+      operationId: GetFilterDetails
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetFilterResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/freeze:
+    post:
+      tags:
+      - Transaction
+      summary: Freeze a transaction-endpoint
+      description: Freezes transaction-endpoints, not allowing for any more transactions.
+      operationId: freeze
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: false
+        schema:
+          $ref: '#/definitions/FreezeRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/FreezeResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/transfer:
+    post:
+      tags:
+      - Transaction
+      summary: Transfer funds
+      description: |-
+        Transfers funds from one vault (of a certain type of asset) to an internal vault or an external address.
+
+        When making an Internal request destination must be the vaultId for the destination vault.
+
+        When making an External request destination must be the address.
+      operationId: transferFunds
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: false
+        schema:
+          $ref: '#/definitions/TransactionRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/TransactionResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidDestinationVaultId, InvalidSenderVaultId, InvalidPriority, InvalidAsset, InvalidTransferFee, InvalidTransferAmount, InvalidDestination, InvalidERC20Gross
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/transferDetails:
+    get:
+      tags:
+      - Transaction
+      summary: Gets data needed to make transfers
+      description: |-
+        It will always return a list of all Assets.
+
+        If the Asset Parameter is set, it will also return AssetDetails, where different data related to the asset can be found.
+        If the add_vault parameter is also set, the AssetDetails will contain the vault.
+      operationId: GetTransferDetails
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Asset
+        in: query
+        required: false
+        type: string
+      - name: add_vault
+        in: query
+        required: false
+        type: string
+        x-go-name: AddVault
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetTransferDetailsResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/unfreeze:
+    post:
+      tags:
+      - Transaction
+      summary: Unfreeze a transaction-endpoint
+      description: Unfreezes transaction-endpoints, once again allowing transactions to pass through.
+      operationId: unfreeze
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: false
+        schema:
+          $ref: '#/definitions/UnFreezeRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/UnFreezeResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/transactions/{Id}:
+    get:
+      tags:
+      - Transaction
+      summary: Get a transaction
+      description: Retrieves a single transaction with the provided TransactionId.
+      operationId: getTransaction
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetTransactionResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/users:
+    get:
+      tags:
+      - User
+      summary: Retrieve all users
+      description: "Retrieves all the users within the Blockdaemon wallet."
+      operationId: getAllUsers
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetUsersResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/users/info:
+    get:
+      tags:
+      - User
+      summary: Get role and status of user
+      description: Retrieves the role and status of user whose ID is in the token.
+      operationId: getUserInfo
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetUserInfoResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/users/register:
+    post:
+      tags:
+      - User
+      summary: Create a new user
+      description: |-
+        Creates a new user from IDP User ID and a given name.
+        Returns the UserId of the user.
+      operationId: registerUserEndpoint
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/RegisterUserRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/UserRegisteredResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidUserRole, InvalidIdpUserId, InvalidUserName
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/users/{Id}/reset:
+    post:
+      tags:
+      - User
+      summary: Reset a user
+      description: "Resets a user information."
+      operationId: resetUserEndpoint
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        description: Description
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/ResetUserResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/users/{Id}/revoke:
+    post:
+      tags:
+      - User
+      summary: Revoke a user
+      description: Changes the status of a user to revoked. Only possible if your user is admin.
+      operationId: revokeUserEndpoint
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        description: Description
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/RevokeUserResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid, RevocationNotAllowed
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults:
+    get:
+      tags:
+      - Vault
+      summary: Get all unhidden vaults and count of hidden vaults
+      operationId: getVaults
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetVaultsResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidOrderDirectionQuery, InvalidOrderByQuery
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/assets:
+    get:
+      tags:
+      - Vault
+      summary: Get all assets.
+      description: Retrieves all assets supported in the system, returns the abbreviation and name of every asset.
+      operationId: getAllAssets
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: []
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetAssetsResponse'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/createVault:
+    post:
+      tags:
+      - Vault
+      summary: Create a new vault
+      description: |-
+        Creates a new vault with a given name. Name must only consist of alphanumeric characters.
+        Returns the VaultId of the vault.
+      operationId: createVault
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/CreateVaultRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/VaultCreatedResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidVaultName
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/search:
+    get:
+      tags:
+      - Vault
+      summary: Search Vaults
+      description: Searches among the hidden vaults.
+      operationId: searchVaults
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: search_name
+        in: query
+        required: false
+        type: string
+        x-go-name: SearchName
+      - name: page_size
+        in: query
+        required: false
+        type: integer
+        format: int64
+        x-go-name: Pagesize
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/SearchHiddenVaultsResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidOrderDirectionQuery, InvalidOrderByQuery
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/{Id}:
+    get:
+      tags:
+      - Vault
+      summary: Get vault
+      description: Retrieves a single vault by UUID in request URL.
+      operationId: getVault
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetVaultResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/{Id}/addAsset:
+    post:
+      tags:
+      - Vault
+      summary: Add an asset to a vault
+      description: |-
+        Adds an asset of type 'Asset' to the vault specified by 'VaultId'.
+        A vault can only contain a single asset of each asset type.
+      operationId: addAsset
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/AddAssetRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid, InvalidAsset
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/{Id}/assets/{Asset}:
+    get:
+      tags:
+      - Vault
+      - Asset
+      summary: Get the addresses of an asset
+      description: Retrieves the addresses of the asset with assettype "asset" under the vault specified by the "id" parameter.
+      operationId: getAddressOfAsset
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      - name: Asset
+        in: path
+        required: true
+        type: string
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/GetAssetAddressesResponse'
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid, InvalidAsset
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/{Id}/hide:
+    post:
+      tags:
+      - Vault
+      summary: Hide Vault
+      description: Hides a vault.
+      operationId: hideVault
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/vaults/{Id}/unhide:
+    post:
+      tags:
+      - Vault
+      summary: Unhide vault
+      description: Unhides a vault.
+      operationId: unHideVault
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: |-
+            User input error
+            Possible errors: InvalidGuid
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /api/ws/subscribeToUpdates:
+    get:
+      tags:
+      - Websocket
+      summary: Subscribe to async updates
+      description: |-
+        NB: This endpoint is described as a normal REST API call, but it is actually a websocket connection, so access it like that.
+        The models can be used still since they will be correct
+      operationId: subscribeToUpdates
+      produces:
+      - application/json
+      parameters:
+      - name: authorization
+        in: query
+        description: An JWT access token
+        required: true
+        type: string
+        x-go-name: Authorization
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: WSMessage
+          schema:
+            $ref: '#/definitions/WSMessage'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /system:
+    get:
+      tags:
+      - Health
+      summary: Enquire the server of it's system
+      description: Returns if the server is healthy or not. In the longer run, this should return a more finely tuned model
+      operationId: system
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/HealthResponse'
+        "500":
+          description: ""
+          schema:
+            $ref: '#/definitions/HealthResponse'
+  /system/api/accounts/addAddress:
+    post:
+      tags:
+      - SystemAPI
+      summary: Add an address synchronously
+      description: "Adds an address to an existing asset of type 'Asset' in the account specified by 'AccountName'.<br/>\n\nThis endpoint can only be used by a System user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/accounts/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
+      operationId: addAddressSynchronously
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/AddAddressSynchronouslyRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/AddAddressSynchronouslyResponse'
+        "400":
+          description: User input error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /system/api/accounts/addAsset:
+    post:
+      tags:
+      - SystemAPI
+      summary: Add an asset to an account synchronously
+      description: "Adds an asset of type 'Asset' to the account specified by 'Name'.<br/>\nAn account can only contain a single asset of each asset type.<br/>\n\nThis endpoint can only be used by a System user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/account/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
+      operationId: addAssetSynchronously
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/AddAssetSynchronouslyRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/AddAssetSynchronouslyResponse'
+        "400":
+          description: User input error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /system/api/accounts/createAccount:
+    post:
+      tags:
+      - SystemAPI
+      summary: Create a new account synchronously
+      description: "Creates a new account with a given name.<br/>\nAccounts created by this endpoint are hidden.\nReturns the Id of the account.<br/>\n\nThis endpoint can only be used by a system user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/account/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
+      operationId: createAccountSynchronously
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        description: Description
+        required: false
+        schema:
+          $ref: '#/definitions/CreateVaultRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/SynchronousVaultCreatedResponse'
+        "400":
+          description: User input error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+  /system/api/transactions/transfer:
+    post:
+      tags:
+      - SystemAPI
+      summary: Transfer funds synchronously
+      description: "Transfers funds from one account (of a certain type of asset) to an internal account or external address<br/>\n\nThis endpoint can only be used by a System user and requires a JWT<br/>\nEvery request must contain the following header:<br/>\nAuthorization - Its value should be set to Bearer < Access Token >, where the access token is a Base64-encoded JWT.<br/>\nThe payload field of the JWT should contain the following fields:\n\n Field     | Description                                                                                                                                   |\n-----------|-----------------------------------------------------------------------------------------------------------------------------------------------|\n uri       | The URI part of the request (e.g., /system/api/accounts/createAccount).                                                                           |\n nonce     | Unique number or string. <br/>Each API request needs to have a different nonce.                                                               |\n iat       | The time at which the JWT was issued, in seconds since Epoch.                                                                                 |\n exp       | The expiration time on and after which the JWT must not be accepted for processing,<br/> in seconds since Epoch. Must be less than iat+30sec. |\n sub       | The API Key.                                                                                                                                  |\n bodyHash  | Hex-encoded SHA-256 hash of the raw HTTP request body. \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  |\n\nThe JWT should be signed with the API secret key and the RS256 algorithm."
+      operationId: transferFundsSynchronously
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/TransactionSynchronousRequest'
+      security:
+      - bearer: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/TransactionSynchronousResponse'
+        "400":
+          description: User input error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "401":
+          description: Unauthorized request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "403":
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "502":
+          description: 3'rd party non-successful status code returned
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+        "504":
+          description: 3'rd party Timeout
+          schema:
+            $ref: '#/definitions/ProblemDetails'
+securityDefinitions:
+  bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  AddAddressRequest:
+    type: object
+    required:
+    - AddressName
+    - Asset
+    - VaultID
+    properties:
+      AddressName:
+        type: string
+      Asset:
+        type: string
+      VaultID:
+        type: string
+        format: uuid
+    x-go-package: wallet/vault/application/addAddress
+  AddAddressSynchronouslyRequest:
+    type: object
+    required:
+    - AccountName
+    - AddressName
+    - Asset
+    properties:
+      AccountName:
+        type: string
+        description: The name of the account, for which an address should be added.
+      AddressName:
+        type: string
+        description: The name you want the new address to have
+      Asset:
+        type: string
+        description: Abbreviation of the currency you wish to add an address of. Ethereum assets can only have one address, so this endpoint won't work for eth.
+    x-go-package: wallet/vault/application/addAddress
+  AddAddressSynchronouslyResponse:
+    type: object
+    required:
+    - Address
+    properties:
+      Address:
+        type: string
+        description: The newly generated address.
+    x-go-package: wallet/vault/application/addAddress
+  AddAssetRequest:
+    type: object
+    required:
+    - Asset
+    properties:
+      Asset:
+        type: string
+    x-go-package: wallet/vault/application/addAsset
+  AddAssetSynchronouslyRequest:
+    type: object
+    required:
+    - Asset
+    - Name
+    properties:
+      Asset:
+        type: string
+        description: Abbreviation of the currency you wish to add an asset of.
+      Name:
+        type: string
+        description: The name of the account, for which an asset should be added.
+    x-go-package: wallet/vault/application/addAsset
+  AddAssetSynchronouslyResponse:
+    type: object
+    required:
+    - Address
+    properties:
+      Address:
+        type: string
+        description: The main address of the newly generated asset.
+    x-go-package: wallet/vault/application/addAsset
+  AddERC20AssetRequest:
+    type: object
+    required:
+    - ContractAddress
+    properties:
+      ContractAddress:
+        type: string
+      Icon:
+        type: array
+        items:
+          type: integer
+          format: uint8
+    x-go-package: wallet/vault/application/addERC20Asset
+  AddUsersToGroupRequest:
+    type: object
+    required:
+    - UserIds
+    properties:
+      UserIds:
+        type: array
+        description: The IDs of the users you wish to add.
+        items:
+          type: string
+          format: uuid
+    x-go-package: wallet/policies/application/addUsersToGroup
+  Address:
+    type: object
+    required:
+    - MainAddress
+    - Name
+    - State
+    properties:
+      Address:
+        type: string
+      MainAddress:
+        type: boolean
+      Name:
+        type: string
+      State:
+        type: string
+        description: |2-
+
+          AddressGenerationInProgress AddressGenerationInProgress
+          AddressGenerationSuccess AddressGenerationSuccess
+          AddressGenerationFailure AddressGenerationFailure
+        enum:
+        - AddressGenerationInProgress
+        - AddressGenerationSuccess
+        - AddressGenerationFailure
+        x-go-enum-desc: |-
+          AddressGenerationInProgress AddressGenerationInProgress
+          AddressGenerationSuccess AddressGenerationSuccess
+          AddressGenerationFailure AddressGenerationFailure
+    x-go-package: wallet/vault/application/getAssetAddresses
+  ApprovalExp:
+    type: object
+    required:
+    - ApprovalGroups
+    - NoOfApprovals
+    properties:
+      ApprovalGroups:
+        type: array
+        description: |-
+          If present, the names of the groups which should approve of which we require at least one element in the list. Multiple elements are interpreted as OR.
+          If not present it signifies All Users
+        items:
+          $ref: '#/definitions/PolicyGroup'
+      NoOfApprovals:
+        type: integer
+        format: int64
+        description: The number of approvals required for this expression to be true. The special value of -1 means all approvers in the given group/union of groups must approve
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  ApprovalExpRequest:
+    type: object
+    required:
+    - ApprovalGroupIds
+    - NoOfApprovals
+    properties:
+      ApprovalGroupIds:
+        type: array
+        description: The groups which should approve. We require at least one element in the list. Multiple elements are interpreted as OR
+        items:
+          type: string
+          format: uuid
+      NoOfApprovals:
+        type: integer
+        format: int64
+        description: The number of approvals required for this expression to be true. The special value of -1 means all approvers in the given group/union of groups must approve
+    x-go-package: wallet/policies/application/updateTransactionPolicyList
+  AssetDetailVault:
+    type: object
+    required:
+    - Amount
+    - CreatedAt
+    - ID
+    - Name
+    properties:
+      Amount:
+        type: string
+      CreatedAt:
+        type: string
+        format: date-time
+      ID:
+        type: string
+        format: uuid
+      Name:
+        type: string
+      USDAmount:
+        type: string
+    x-go-package: wallet/vault/application/getDetailsOfAsset
+  AssetInfoDto:
+    type: object
+    required:
+    - Abbreviation
+    - Name
+    properties:
+      Abbreviation:
+        type: string
+      ContractAddress:
+        type: string
+      Name:
+        type: string
+    x-go-package: wallet/vault/application/getSupportedAssets
+  AssetSummary:
+    type: object
+    required:
+    - Amount
+    - Asset
+    - Name
+    properties:
+      Amount:
+        type: string
+      Asset:
+        type: string
+      Name:
+        type: string
+      USDAmount:
+        type: string
+    x-go-package: wallet/vault/application/getVault
+  BlockchainProgressResponse:
+    type: object
+    required:
+    - Asset
+    - CurrentBlock
+    - LastProcessedBlock
+    properties:
+      Asset:
+        type: string
+      CurrentBlock:
+        type: integer
+        format: int64
+      LastProcessedBlock:
+        type: integer
+        format: int64
+    x-go-package: wallet/transaction/application/getBlockchainProgress
+  ConfigResponse:
+    type: object
+    required:
+    - AppConfigLink
+    - AppStoreLink
+    - Feature
+    - Frozen
+    - InstanceName
+    - MasterKeyBackupPerformed
+    - MuixLicenseKey
+    - OAuthAudience
+    - OAuthClientId
+    - OAuthDomain
+    - TestNet
+    - Version
+    properties:
+      AppConfigLink:
+        type: string
+      AppStoreLink:
+        type: string
+      Feature:
+        $ref: '#/definitions/Feature'
+      Frozen:
+        type: string
+        description: |2-
+
+          Unfrozen Unfrozen
+          Frozen Frozen
+          Thawing Thawing
+        enum:
+        - Unfrozen
+        - Frozen
+        - Thawing
+        x-go-enum-desc: |-
+          Unfrozen Unfrozen
+          Frozen Frozen
+          Thawing Thawing
+      InstanceName:
+        type: string
+      MasterKeyBackupPerformed:
+        type: boolean
+      MuixLicenseKey:
+        type: string
+      OAuthAudience:
+        type: string
+      OAuthClientId:
+        type: string
+      OAuthDomain:
+        type: string
+      TestNet:
+        type: boolean
+      Version:
+        type: string
+    x-go-package: wallet/system/application/getConfig
+  CreateGroupRequest:
+    type: object
+    required:
+    - Name
+    properties:
+      Name:
+        type: string
+        description: The name of the group. Must be case-insensitively unique.
+    x-go-package: wallet/policies/application/createGroup
+  CreateVaultRequest:
+    type: object
+    required:
+    - Name
+    properties:
+      Name:
+        type: string
+        description: The name of the account. Must be case-insensitively unique.
+    x-go-package: wallet/vault/application/createVault
+  DatabaseHealth:
+    type: object
+    required:
+    - Healthy
+    properties:
+      ErrorMessage:
+        type: string
+      Healthy:
+        type: boolean
+    x-go-package: wallet/system/application/healthCheck
+  Destination:
+    type: object
+    required:
+    - Addresses
+    - VaultID
+    - VaultName
+    properties:
+      Addresses:
+        type: array
+        items:
+          type: string
+      VaultID:
+        type: string
+        format: uuid
+      VaultName:
+        type: string
+    x-go-package: wallet/transaction/application/getTransaction
+  DestinationAndAmount:
+    type: object
+    properties:
+      Amount:
+        type: string
+      Destination:
+        type: string
+    x-go-package: wallet/transaction/application/transferFunds
+  DetailAssetSummary:
+    type: object
+    required:
+    - Amount
+    - Asset
+    - Name
+    properties:
+      Amount:
+        type: string
+      Asset:
+        type: string
+      Name:
+        type: string
+      USDAmount:
+        type: string
+    x-go-package: wallet/vault/application/getDetailsOfAsset
+  DisableSystemUserResponse:
+    type: object
+    x-go-package: wallet/user/application/disableSystemUser
+  DtoAddressFields:
+    type: object
+    required:
+    - Asset
+    - Name
+    - VaultName
+    properties:
+      Asset:
+        type: string
+      Name:
+        type: string
+      VaultName:
+        type: string
+    x-go-package: wallet/notification/application
+  DtoERC20Fields:
+    type: object
+    required:
+    - AbbreviationOfAsset
+    properties:
+      AbbreviationOfAsset:
+        type: string
+    x-go-package: wallet/notification/application
+  DtoExchangeRate:
+    type: object
+    required:
+    - AllowRange
+    - Asset
+    - Name
+    - Status
+    properties:
+      AllowRange:
+        type: boolean
+      Asset:
+        type: string
+      Name:
+        type: string
+      Status:
+        type: string
+        description: |2-
+
+          New New
+          AwaitingConfirmation AwaitingConfirmation
+          AwaitingApproval AwaitingApproval
+          Rejected Rejected
+          Failed Failed
+          Success Success
+        enum:
+        - New
+        - AwaitingConfirmation
+        - AwaitingApproval
+        - Rejected
+        - Failed
+        - Success
+        x-go-enum-desc: |-
+          New New
+          AwaitingConfirmation AwaitingConfirmation
+          AwaitingApproval AwaitingApproval
+          Rejected Rejected
+          Failed Failed
+          Success Success
+      USDMax:
+        type: string
+      USDMin:
+        type: string
+      USDRate:
+        type: string
+    x-go-package: wallet/asset/application/getAllExchangeRates
+  DtoExchangeRateFields:
+    type: object
+    required:
+    - ChangedCoins
+    properties:
+      ChangedCoins:
+        type: array
+        items:
+          type: string
+    x-go-package: wallet/notification/application
+  DtoFilterAsset:
+    type: object
+    required:
+    - Abbreviation
+    - Name
+    properties:
+      Abbreviation:
+        type: string
+      Name:
+        type: string
+    x-go-package: wallet/transaction/application/getFilterDetails
+  DtoFilterUser:
+    type: object
+    required:
+    - IdpUserId
+    properties:
+      IdpUserId:
+        type: string
+    x-go-package: wallet/transaction/application/getFilterDetails
+  DtoFilterVault:
+    type: object
+    required:
+    - Hidden
+    - Id
+    - Name
+    properties:
+      Hidden:
+        type: boolean
+      Id:
+        type: string
+        format: uuid
+      Name:
+        type: string
+    x-go-package: wallet/transaction/application/getFilterDetails
+  DtoGetNotifications:
+    type: object
+    required:
+    - Notifications
+    properties:
+      Notifications:
+        type: array
+        items:
+          $ref: '#/definitions/DtoNotification'
+    x-go-package: wallet/notification/application/getNotifications
+  DtoGroupFields:
+    type: object
+    required:
+    - GroupName
+    properties:
+      GroupName:
+        type: string
+    x-go-package: wallet/notification/application
+  DtoNotification:
+    type: object
+    required:
+    - CreatedAt
+    - CreatedBy
+    - JsonSerializedDetails
+    - NotificationId
+    - Seen
+    - Topic
+    properties:
+      CreatedAt:
+        type: string
+        format: date-time
+        description: When the notification was created in the wallet system
+      CreatedBy:
+        type: string
+        description: Indicates the user which initiated the notification. In some cases, this can be 'System' as well
+      ErrorMessage:
+        type: string
+        description: Optional system error message. Might not be useful to the user, and only exists for the failure notifications
+      JsonSerializedDetails:
+        type: string
+        description: Json serialized data which, when unpacked, reveals more details about the notification. The model depends on the notification topic
+      NotificationId:
+        type: string
+        format: uuid
+      Seen:
+        type: boolean
+        description: Indicates if the asking user has seen the notification before or not
+      SubjectId:
+        type: string
+        format: uuid
+        description: Unique identifier of notification subject
+      Topic:
+        type: string
+        description: |-
+          The topic of the notification
+          TransactionFailed TransactionFailed
+          TransactionRejected TransactionRejected
+          TransactionPushed TransactionPushed
+          TransactionPulled TransactionPulled
+          TransactionStable TransactionStable
+          TransactionRevived TransactionRevived
+          VaultCreationFailed VaultCreationFailed
+          VaultCreationSucceeded VaultCreationSucceeded
+          AddressGenerationFailed AddressGenerationFailed
+          AddressGenerationSuccess AddressGenerationSuccess
+          UserRegistrationFailed UserRegistrationFailed
+          UserActive UserActive
+          UserRevoked UserRevoked
+          UserRevocationFailed UserRevocationFailed
+          UserRevocationRejected UserRevocationRejected
+          UserReset UserReset
+          UserResetFailed UserResetFailed
+          UserResetRejected UserResetRejected
+          SystemUserEnabled SystemUserEnabled
+          SystemUserDisabled SystemUserDisabled
+          AddUserToGroupSuccess AddUserToGroupSuccess
+          AddUserToGroupFailed AddUserToGroupFailed
+          AddUserToGroupRejected AddUserToGroupRejected
+          RemoveUserFromGroupSuccess RemoveUserFromGroupSuccess
+          RemoveUserFromGroupFailed RemoveUserFromGroupFailed
+          RemoveUserFromGroupRejected RemoveUserFromGroupRejected
+          GroupCreated GroupCreated
+          TransactionPolicyUpdateInitiated TransactionPolicyUpdateInitiated
+          TransactionPolicyUpdateSuccess TransactionPolicyUpdateSuccess
+          TransactionPolicyUpdateFailed TransactionPolicyUpdateFailed
+          TransactionPolicyUpdateRejected TransactionPolicyUpdateRejected
+          TransactionPolicyUpdateConfirmed TransactionPolicyUpdateConfirmed
+          ExchangeRateUpdateSuccess ExchangeRateUpdateSuccess
+          ExchangeRateUpdateRejected ExchangeRateUpdateRejected
+          ExchangeRateUpdateFailed ExchangeRateUpdateFailed
+          ERC20UpdateSuccess ERC20UpdateSuccess
+          ERC20UpdateFailed ERC20UpdateFailed
+          ERC20UpdateRejected ERC20UpdateRejected
+        enum:
+        - TransactionFailed
+        - TransactionRejected
+        - TransactionPushed
+        - TransactionPulled
+        - TransactionStable
+        - TransactionRevived
+        - VaultCreationFailed
+        - VaultCreationSucceeded
+        - AddressGenerationFailed
+        - AddressGenerationSuccess
+        - UserRegistrationFailed
+        - UserActive
+        - UserRevoked
+        - UserRevocationFailed
+        - UserRevocationRejected
+        - UserReset
+        - UserResetFailed
+        - UserResetRejected
+        - SystemUserEnabled
+        - SystemUserDisabled
+        - AddUserToGroupSuccess
+        - AddUserToGroupFailed
+        - AddUserToGroupRejected
+        - RemoveUserFromGroupSuccess
+        - RemoveUserFromGroupFailed
+        - RemoveUserFromGroupRejected
+        - GroupCreated
+        - TransactionPolicyUpdateInitiated
+        - TransactionPolicyUpdateSuccess
+        - TransactionPolicyUpdateFailed
+        - TransactionPolicyUpdateRejected
+        - TransactionPolicyUpdateConfirmed
+        - ExchangeRateUpdateSuccess
+        - ExchangeRateUpdateRejected
+        - ExchangeRateUpdateFailed
+        - ERC20UpdateSuccess
+        - ERC20UpdateFailed
+        - ERC20UpdateRejected
+        x-go-enum-desc: |-
+          TransactionFailed TransactionFailed
+          TransactionRejected TransactionRejected
+          TransactionPushed TransactionPushed
+          TransactionPulled TransactionPulled
+          TransactionStable TransactionStable
+          TransactionRevived TransactionRevived
+          VaultCreationFailed VaultCreationFailed
+          VaultCreationSucceeded VaultCreationSucceeded
+          AddressGenerationFailed AddressGenerationFailed
+          AddressGenerationSuccess AddressGenerationSuccess
+          UserRegistrationFailed UserRegistrationFailed
+          UserActive UserActive
+          UserRevoked UserRevoked
+          UserRevocationFailed UserRevocationFailed
+          UserRevocationRejected UserRevocationRejected
+          UserReset UserReset
+          UserResetFailed UserResetFailed
+          UserResetRejected UserResetRejected
+          SystemUserEnabled SystemUserEnabled
+          SystemUserDisabled SystemUserDisabled
+          AddUserToGroupSuccess AddUserToGroupSuccess
+          AddUserToGroupFailed AddUserToGroupFailed
+          AddUserToGroupRejected AddUserToGroupRejected
+          RemoveUserFromGroupSuccess RemoveUserFromGroupSuccess
+          RemoveUserFromGroupFailed RemoveUserFromGroupFailed
+          RemoveUserFromGroupRejected RemoveUserFromGroupRejected
+          GroupCreated GroupCreated
+          TransactionPolicyUpdateInitiated TransactionPolicyUpdateInitiated
+          TransactionPolicyUpdateSuccess TransactionPolicyUpdateSuccess
+          TransactionPolicyUpdateFailed TransactionPolicyUpdateFailed
+          TransactionPolicyUpdateRejected TransactionPolicyUpdateRejected
+          TransactionPolicyUpdateConfirmed TransactionPolicyUpdateConfirmed
+          ExchangeRateUpdateSuccess ExchangeRateUpdateSuccess
+          ExchangeRateUpdateRejected ExchangeRateUpdateRejected
+          ExchangeRateUpdateFailed ExchangeRateUpdateFailed
+          ERC20UpdateSuccess ERC20UpdateSuccess
+          ERC20UpdateFailed ERC20UpdateFailed
+          ERC20UpdateRejected ERC20UpdateRejected
+    x-go-package: wallet/notification/application
+  DtoPendingChangesExchangeRate:
+    type: object
+    required:
+    - AllowRange
+    - Asset
+    - Name
+    properties:
+      AllowRange:
+        type: boolean
+      Asset:
+        type: string
+      Name:
+        type: string
+      USDMax:
+        type: string
+      USDMin:
+        type: string
+      USDRate:
+        type: string
+    x-go-package: wallet/asset/application/getAllExchangeRates
+  DtoPolicyUser:
+    type: object
+    required:
+    - Id
+    - Name
+    - Role
+    - State
+    properties:
+      Id:
+        type: string
+        format: uuid
+      IdpId:
+        type: string
+      Name:
+        type: string
+      Role:
+        type: string
+      State:
+        type: string
+        description: |2-
+
+          AddUserInProgress AddUserInProgress
+          RemoveUserInProgress RemoveUserInProgress
+          AddUserSuccess AddUserSuccess
+        enum:
+        - AddUserInProgress
+        - RemoveUserInProgress
+        - AddUserSuccess
+        x-go-enum-desc: |-
+          AddUserInProgress AddUserInProgress
+          RemoveUserInProgress RemoveUserInProgress
+          AddUserSuccess AddUserSuccess
+    x-go-package: wallet/policies/application/getGroup
+  DtoSystemUserFields:
+    type: object
+    required:
+    - UserName
+    properties:
+      UserName:
+        type: string
+    x-go-package: wallet/notification/application
+  DtoTransactionFields:
+    type: object
+    required:
+    - Amount
+    - AssetType
+    - Destination
+    - Source
+    properties:
+      Amount:
+        type: string
+      AssetType:
+        type: string
+      Destination:
+        type: string
+      Source:
+        type: string
+    x-go-package: wallet/notification/application
+  DtoUserFields:
+    type: object
+    required:
+    - IdpId
+    - UserName
+    properties:
+      IdpId:
+        type: string
+      UserName:
+        type: string
+    x-go-package: wallet/notification/application
+  DtoUserGroupFields:
+    type: object
+    required:
+    - GroupName
+    - UserIdpId
+    - UserName
+    properties:
+      GroupName:
+        type: string
+      UserIdpId:
+        type: string
+      UserName:
+        type: string
+    x-go-package: wallet/notification/application
+  DtoVaultFields:
+    type: object
+    required:
+    - Name
+    properties:
+      Name:
+        type: string
+    x-go-package: wallet/notification/application
+  EnableSystemUserRequest:
+    type: object
+    required:
+    - MpaId
+    - WalletPublicKey
+    properties:
+      MpaId:
+        type: string
+      WalletPublicKey:
+        type: string
+        description: |-
+          Public key for verifying signature of JWT that API users should have in header of all requests.
+          Key must be a base64 encoded string in .PEM format (including -----BEGIN PUBLIC KEY-----, ----END PUBLIC KEY----- and linebreaks)
+          For instruction as to how to generate this, see README under Api Users
+    x-go-package: wallet/user/application/enableSystemUser
+  Error:
+    type: object
+    required:
+    - ErrorCode
+    - Message
+    properties:
+      ErrorCode:
+        type: string
+        description: |2-
+
+          InvalidPageQuery InvalidPageQuery
+          InvalidPageSizeQuery InvalidPageSizeQuery
+          InvalidOrderByQuery InvalidOrderByQuery
+          InvalidOrderDirectionQuery InvalidOrderDirectionQuery
+          InvalidStartDateQuery InvalidStartDate
+          InvalidEndDateQuery InvalidEndDate
+          InvalidAsset InvalidAsset
+          InvalidGuid InvalidGuid
+          InvalidJsonInput InvalidJson
+          UnknownValidation UnknownValidation
+          InvalidGroupName InvalidGroupName  Group Error Codes
+          NoUsersInRequest NoUsersInRequest
+          UserNotGroupable UserNotGroupable
+          UserAlreadyInGroup UserAlreadyInGroup
+          UserNotRemovable UserNotRemovable
+          InvalidUserName InvalidUserName  User Error Codes
+          InvalidIdpUserId InvalidIdpUserId
+          InvalidMpaId InvalidMpaId
+          InvalidWalletPublicKey InvalidWalletPublicKey
+          RevocationNotAllowed RevocationNotAllowed
+          InvalidVaultName InvalidVaultName  Vault Error Codes
+          InvalidVaultState InvalidVaultState
+          MultipleAddressesNotAllowed MultipleAddressesNotAllowed
+          AssetAlreadyExists AssetAlreadyExists
+          InvalidHiddenValue InvalidHiddenValue
+          InvalidDestinationVaultId InvalidDestinationVaultId  Transaction Error Codes
+          InvalidSenderVaultId InvalidSenderVaultId
+          InvalidSenderVaultName InvalidSenderVaultName
+          InvalidTransferAmount InvalidTransferAmount
+          InvalidTransferFee InvalidTransferFee
+          InvalidUserRole InvalidUserRole
+          InvalidTransactionState InvalidTransactionState
+          InvalidAddress InvalidAddress
+          InvalidAddressName InvalidAddressName
+          InvalidStableHeight InvalidStableHeight
+          NotEnoughFunds NotEnoughFunds
+          AddressIsInternal AddressIsInternal
+          InvalidDestination InvalidDestination
+          InvalidPolicyMinAmount InvalidPolicyMinAmount  Policy Error Codes
+          InvalidPolicyDestinationType InvalidPolicyDestinationType
+          PolicyDestinationEmpty PolicyDestinationEmpty
+          InvalidPolicyNoOfApprovals InvalidPolicyNoOfApprovals
+          InvalidPolicyNoOfApprovalExpressions InvalidPolicyNoOfApprovalExpressions
+          InvalidPolicyFromMPA InvalidPolicyFromMPA
+          PolicyUpdateIsInProgress PolicyUpdateIsInProgress
+          PolicyUpdateIsNotInProgress PolicyUpdateIsNotInProgress
+          InvalidAssetType InvalidAssetType  Coin Error Codes
+          InvalidAssetName InvalidAssetName
+          InvalidAssetIcon InvalidAssetIcon
+          InvalidAssetUnitString InvalidAssetUnitString
+          InvalidAssetPrecision InvalidAssetPrecision
+          InvalidAssetUnitPrecision InvalidAssetUnitPrecision
+          InvalidAssetContract InvalidAssetContract
+          InvalidERC20Gross InvalidERC20Gross  ERC20 Transaction Error codes
+          InvalidPriority InvalidPriority  BlockdaemonPriority Error Codes
+          ExchangeRateUpdateChangesMissing ExchangeRateUpdateChangesMissing  Exchange Rate Error codes
+          ExchangeRateUpdateAssetMissing ExchangeRateUpdateAssetMissing
+          ExchangeRateUpdateNoCreator ExchangeRateUpdateNoCreator
+          ExchangeRateUpdateNegativeRate ExchangeRateUpdateNegativeRate
+          ExchangeRateUpdateIsInProgress ExchangeRateUpdateIsInProgress
+          ExchangeRateUpdateMixRangeAndRate ExchangeRateUpdateMixRangeAndRate
+          ExchangeRateUpdateNotANumber ExchangeRateUpdateNotANumber
+          InvalidStakingAmountFormat InvalidStakingAmountFormat  Staking
+          InvalidStakingAmount InvalidStakingAmount
+        enum:
+        - InvalidPageQuery
+        - InvalidPageSizeQuery
+        - InvalidOrderByQuery
+        - InvalidOrderDirectionQuery
+        - InvalidStartDateQuery
+        - InvalidEndDateQuery
+        - InvalidAsset
+        - InvalidGuid
+        - InvalidJsonInput
+        - UnknownValidation
+        - InvalidGroupName
+        - NoUsersInRequest
+        - UserNotGroupable
+        - UserAlreadyInGroup
+        - UserNotRemovable
+        - InvalidUserName
+        - InvalidIdpUserId
+        - InvalidMpaId
+        - InvalidWalletPublicKey
+        - RevocationNotAllowed
+        - InvalidVaultName
+        - InvalidVaultState
+        - MultipleAddressesNotAllowed
+        - AssetAlreadyExists
+        - InvalidHiddenValue
+        - InvalidDestinationVaultId
+        - InvalidSenderVaultId
+        - InvalidSenderVaultName
+        - InvalidTransferAmount
+        - InvalidTransferFee
+        - InvalidUserRole
+        - InvalidTransactionState
+        - InvalidAddress
+        - InvalidAddressName
+        - InvalidStableHeight
+        - NotEnoughFunds
+        - AddressIsInternal
+        - InvalidDestination
+        - InvalidPolicyMinAmount
+        - InvalidPolicyDestinationType
+        - PolicyDestinationEmpty
+        - InvalidPolicyNoOfApprovals
+        - InvalidPolicyNoOfApprovalExpressions
+        - InvalidPolicyFromMPA
+        - PolicyUpdateIsInProgress
+        - PolicyUpdateIsNotInProgress
+        - InvalidAssetType
+        - InvalidAssetName
+        - InvalidAssetIcon
+        - InvalidAssetUnitString
+        - InvalidAssetPrecision
+        - InvalidAssetUnitPrecision
+        - InvalidAssetContract
+        - InvalidERC20Gross
+        - InvalidPriority
+        - ExchangeRateUpdateChangesMissing
+        - ExchangeRateUpdateAssetMissing
+        - ExchangeRateUpdateNoCreator
+        - ExchangeRateUpdateNegativeRate
+        - ExchangeRateUpdateIsInProgress
+        - ExchangeRateUpdateMixRangeAndRate
+        - ExchangeRateUpdateNotANumber
+        - InvalidStakingAmountFormat
+        - InvalidStakingAmount
+        x-go-enum-desc: |-
+          InvalidPageQuery InvalidPageQuery
+          InvalidPageSizeQuery InvalidPageSizeQuery
+          InvalidOrderByQuery InvalidOrderByQuery
+          InvalidOrderDirectionQuery InvalidOrderDirectionQuery
+          InvalidStartDateQuery InvalidStartDate
+          InvalidEndDateQuery InvalidEndDate
+          InvalidAsset InvalidAsset
+          InvalidGuid InvalidGuid
+          InvalidJsonInput InvalidJson
+          UnknownValidation UnknownValidation
+          InvalidGroupName InvalidGroupName  Group Error Codes
+          NoUsersInRequest NoUsersInRequest
+          UserNotGroupable UserNotGroupable
+          UserAlreadyInGroup UserAlreadyInGroup
+          UserNotRemovable UserNotRemovable
+          InvalidUserName InvalidUserName  User Error Codes
+          InvalidIdpUserId InvalidIdpUserId
+          InvalidMpaId InvalidMpaId
+          InvalidWalletPublicKey InvalidWalletPublicKey
+          RevocationNotAllowed RevocationNotAllowed
+          InvalidVaultName InvalidVaultName  Vault Error Codes
+          InvalidVaultState InvalidVaultState
+          MultipleAddressesNotAllowed MultipleAddressesNotAllowed
+          AssetAlreadyExists AssetAlreadyExists
+          InvalidHiddenValue InvalidHiddenValue
+          InvalidDestinationVaultId InvalidDestinationVaultId  Transaction Error Codes
+          InvalidSenderVaultId InvalidSenderVaultId
+          InvalidSenderVaultName InvalidSenderVaultName
+          InvalidTransferAmount InvalidTransferAmount
+          InvalidTransferFee InvalidTransferFee
+          InvalidUserRole InvalidUserRole
+          InvalidTransactionState InvalidTransactionState
+          InvalidAddress InvalidAddress
+          InvalidAddressName InvalidAddressName
+          InvalidStableHeight InvalidStableHeight
+          NotEnoughFunds NotEnoughFunds
+          AddressIsInternal AddressIsInternal
+          InvalidDestination InvalidDestination
+          InvalidPolicyMinAmount InvalidPolicyMinAmount  Policy Error Codes
+          InvalidPolicyDestinationType InvalidPolicyDestinationType
+          PolicyDestinationEmpty PolicyDestinationEmpty
+          InvalidPolicyNoOfApprovals InvalidPolicyNoOfApprovals
+          InvalidPolicyNoOfApprovalExpressions InvalidPolicyNoOfApprovalExpressions
+          InvalidPolicyFromMPA InvalidPolicyFromMPA
+          PolicyUpdateIsInProgress PolicyUpdateIsInProgress
+          PolicyUpdateIsNotInProgress PolicyUpdateIsNotInProgress
+          InvalidAssetType InvalidAssetType  Coin Error Codes
+          InvalidAssetName InvalidAssetName
+          InvalidAssetIcon InvalidAssetIcon
+          InvalidAssetUnitString InvalidAssetUnitString
+          InvalidAssetPrecision InvalidAssetPrecision
+          InvalidAssetUnitPrecision InvalidAssetUnitPrecision
+          InvalidAssetContract InvalidAssetContract
+          InvalidERC20Gross InvalidERC20Gross  ERC20 Transaction Error codes
+          InvalidPriority InvalidPriority  BlockdaemonPriority Error Codes
+          ExchangeRateUpdateChangesMissing ExchangeRateUpdateChangesMissing  Exchange Rate Error codes
+          ExchangeRateUpdateAssetMissing ExchangeRateUpdateAssetMissing
+          ExchangeRateUpdateNoCreator ExchangeRateUpdateNoCreator
+          ExchangeRateUpdateNegativeRate ExchangeRateUpdateNegativeRate
+          ExchangeRateUpdateIsInProgress ExchangeRateUpdateIsInProgress
+          ExchangeRateUpdateMixRangeAndRate ExchangeRateUpdateMixRangeAndRate
+          ExchangeRateUpdateNotANumber ExchangeRateUpdateNotANumber
+          InvalidStakingAmountFormat InvalidStakingAmountFormat  Staking
+          InvalidStakingAmount InvalidStakingAmount
+      Index:
+        type: array
+        description: |-
+          Determines the indices where this error occurred (only really useful for nested objects where multiples of the same structure appears).
+          If we e.g. have an array with another array inside, we would need a level indicator of i.e. [1,0].
+          If the array is empty, as is most common, the error refers to the struct in the context
+        items:
+          type: integer
+          format: int64
+        x-go-name: Indices
+      Message:
+        type: string
+    x-go-package: wallet/foundation/errors
+  ErrorMessage:
+    type: object
+    required:
+    - CorrelationID
+    - ErrorMessage
+    properties:
+      CorrelationID:
+        type: string
+      ErrorMessage:
+        type: string
+    x-go-package: wallet/transaction/application/getTransaction
+  Feature:
+    type: object
+    required:
+    - StakeEth
+    properties:
+      StakeEth:
+        type: boolean
+    x-go-package: wallet/system/application/getConfig
+  File:
+    type: object
+    title: File represents an open file descriptor.
+    x-go-package: os
+  FileHeader:
+    type: object
+    properties:
+      Filename:
+        type: string
+      Header:
+        $ref: '#/definitions/MIMEHeader'
+      Size:
+        type: integer
+        format: int64
+    title: A FileHeader describes a file part of a multipart request.
+    x-go-package: mime/multipart
+  FreezeRequest:
+    type: object
+    x-go-package: wallet/transaction/application/freeze
+  FreezeResponse:
+    type: object
+    x-go-package: wallet/transaction/application/freeze
+  GetAllExchangeRatesResponse:
+    type: object
+    required:
+    - ExchangeRates
+    properties:
+      ExchangeRates:
+        type: array
+        items:
+          $ref: '#/definitions/DtoExchangeRate'
+      PendingExchangeRates:
+        $ref: '#/definitions/PendingExchangeRates'
+    x-go-package: wallet/asset/application/getAllExchangeRates
+  GetAssetAddressesResponse:
+    type: object
+    required:
+    - Addresses
+    - IsAccountBased
+    properties:
+      Addresses:
+        type: array
+        items:
+          $ref: '#/definitions/Address'
+      IsAccountBased:
+        type: boolean
+    x-go-package: wallet/vault/application/getAssetAddresses
+  GetAssetResponse:
+    type: object
+    required:
+    - Asset
+    - Vaults
+    properties:
+      Asset:
+        $ref: '#/definitions/DetailAssetSummary'
+      Vaults:
+        type: array
+        items:
+          $ref: '#/definitions/AssetDetailVault'
+    x-go-package: wallet/vault/application/getDetailsOfAsset
+  GetAssetsResponse:
+    type: object
+    required:
+    - Assets
+    properties:
+      Assets:
+        type: array
+        items:
+          $ref: '#/definitions/AssetInfoDto'
+    x-go-package: wallet/vault/application/getSupportedAssets
+  GetFilterResponse:
+    type: object
+    required:
+    - Assets
+    - Users
+    - Vaults
+    properties:
+      Assets:
+        type: array
+        items:
+          $ref: '#/definitions/DtoFilterAsset'
+      Users:
+        type: array
+        items:
+          $ref: '#/definitions/DtoFilterUser'
+      Vaults:
+        type: array
+        items:
+          $ref: '#/definitions/DtoFilterVault'
+    x-go-package: wallet/transaction/application/getFilterDetails
+  GetGroupResponse:
+    type: object
+    required:
+    - Group
+    properties:
+      Group:
+        $ref: '#/definitions/Group'
+    x-go-package: wallet/policies/application/getGroup
+  GetGroupableUsersResponse:
+    type: object
+    required:
+    - Users
+    properties:
+      Users:
+        type: array
+        items:
+          $ref: '#/definitions/GroupableUser'
+    x-go-package: wallet/policies/application/getGroupableUsers
+  GetGroupsResponse:
+    type: object
+    required:
+    - Groups
+    properties:
+      Groups:
+        type: array
+        items:
+          $ref: '#/definitions/Groups'
+    x-go-package: wallet/policies/application/getGroups
+  GetImportableSystemUsersResponse:
+    type: object
+    required:
+    - ImportableSystemUsers
+    properties:
+      ImportableSystemUsers:
+        type: array
+        items:
+          $ref: '#/definitions/ImportableSystemUser'
+    x-go-package: wallet/user/application/getImportableSystemUsers
+  GetSummaryOfAllAssetsResponse:
+    type: object
+    required:
+    - Assets
+    properties:
+      Assets:
+        type: array
+        items:
+          $ref: '#/definitions/OverviewSummaryOfAsset'
+    x-go-package: wallet/vault/application/getSummaryAssets
+  GetTransactionDto:
+    type: object
+    required:
+    - Amount
+    - Asset
+    - AssetName
+    - Confirmations
+    - CreatedAt
+    - CreatedBy
+    - ExternalDestinationAddresses
+    - Id
+    - InternalDestination
+    - InternalSource
+    - InternalWithdrawDestination
+    - StakingTransaction
+    - Status
+    - Unit
+    - UpdatedAt
+    properties:
+      ActualFee:
+        type: string
+      Amount:
+        type: string
+      AmountRequested:
+        type: string
+      Asset:
+        type: string
+      AssetName:
+        type: string
+      Confirmations:
+        type: integer
+        format: int64
+      CreatedAt:
+        type: string
+      CreatedBy:
+        type: string
+      Destination:
+        $ref: '#/definitions/Destination'
+      ErrorMessage:
+        $ref: '#/definitions/ErrorMessage'
+      EstimatedFee:
+        type: string
+      ExternalDestinationAddresses:
+        type: array
+        items:
+          type: string
+      ExternalSourceAddresses:
+        type: array
+        items:
+          type: string
+      ExternalWithdrawDestinationAddress:
+        type: string
+      FeePriority:
+        type: string
+        enum:
+        - Low
+        - Medium
+        - High
+        - Custom
+        x-go-enum-desc: |-
+          Low Low
+          Medium Medium
+          High High
+          Custom Custom
+      FeeRate:
+        type: string
+      GrossRequested:
+        type: boolean
+      Id:
+        type: string
+        format: uuid
+      InternalDestination:
+        type: boolean
+      InternalSource:
+        type: boolean
+      InternalWithdrawDestination:
+        type: boolean
+      Source:
+        $ref: '#/definitions/Source'
+      StakingTransaction:
+        type: boolean
+      Status:
+        type: string
+        description: |2-
+
+          New New
+          AwaitingConfirmation AwaitingConfirmation
+          AwaitingApproval AwaitingApproval
+          Approved Approved
+          Pooled Pooled
+          Stabilizing Stabilizing
+          Stable Stable
+          Rejected Rejected
+          Failed Failed
+        enum:
+        - New
+        - AwaitingConfirmation
+        - AwaitingApproval
+        - Approved
+        - Pooled
+        - Stabilizing
+        - Stable
+        - Rejected
+        - Failed
+        x-go-enum-desc: |-
+          New New
+          AwaitingConfirmation AwaitingConfirmation
+          AwaitingApproval AwaitingApproval
+          Approved Approved
+          Pooled Pooled
+          Stabilizing Stabilizing
+          Stable Stable
+          Rejected Rejected
+          Failed Failed
+      TxHash:
+        type: string
+      USDAmount:
+        type: string
+      Unit:
+        type: string
+      UpdatedAt:
+        type: string
+      WithdrawDestination:
+        $ref: '#/definitions/Destination'
+    x-go-name: DtoTransaction
+    x-go-package: wallet/transaction/application/getTransaction
+  GetTransactionResponse:
+    type: object
+    required:
+    - Transaction
+    properties:
+      Transaction:
+        $ref: '#/definitions/GetTransactionDto'
+    x-go-package: wallet/transaction/application/getTransaction
+  GetTransferAssetDetails:
+    type: object
+    required:
+    - AssetDetails
+    - Fee
+    properties:
+      AssetDetails:
+        $ref: '#/definitions/TransferAssetDetailsResponse'
+      ExchangeRate:
+        type: string
+      Fee:
+        $ref: '#/definitions/TransferAssetDetailsFeeRates'
+    x-go-package: wallet/transaction/application/getAssetDetailsTransaction
+  GetTransferDetailsResponse:
+    type: object
+    required:
+    - Assets
+    properties:
+      AssetDetails:
+        $ref: '#/definitions/TransferAssetDetailsDto'
+      Assets:
+        type: array
+        items:
+          $ref: '#/definitions/TransferDetailsAssetDto'
+    x-go-package: wallet/transaction/application/getTransferDetails
+  GetUserInfoResponse:
+    type: object
+    required:
+    - Name
+    - Role
+    - Status
+    properties:
+      Name:
+        type: string
+      Role:
+        type: string
+        description: |2-
+
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+        enum:
+        - MarketOps
+        - Admin
+        - Viewer
+        x-go-enum-desc: |-
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+      Status:
+        type: string
+        description: |2-
+
+          New New
+          Pending Confirmation PendingConfirmation
+          Pending Approval PendingApproval
+          Pending Onboarding PendingOnboarding
+          Pending Revocation PendingRevocation
+          Pending Reset PendingReset
+          Revoked Revoked
+          Rejected Rejected
+          Failed Failed
+          Active Active
+        enum:
+        - New
+        - Pending Confirmation
+        - Pending Approval
+        - Pending Onboarding
+        - Pending Revocation
+        - Pending Reset
+        - Revoked
+        - Rejected
+        - Failed
+        - Active
+        x-go-enum-desc: |-
+          New New
+          Pending Confirmation PendingConfirmation
+          Pending Approval PendingApproval
+          Pending Onboarding PendingOnboarding
+          Pending Revocation PendingRevocation
+          Pending Reset PendingReset
+          Revoked Revoked
+          Rejected Rejected
+          Failed Failed
+          Active Active
+    x-go-package: wallet/user/application/getUserInfo
+  GetUsersResponse:
+    type: object
+    required:
+    - SystemUsers
+    - Users
+    properties:
+      SystemUsers:
+        type: array
+        items:
+          $ref: '#/definitions/SystemUser'
+      Users:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+    x-go-package: wallet/user/application/getUsers
+  GetVaultResponse:
+    type: object
+    required:
+    - Vault
+    properties:
+      Vault:
+        $ref: '#/definitions/Vault'
+    x-go-package: wallet/vault/application/getVault
+  GetVaultsResponse:
+    type: object
+    required:
+    - HiddenVaultCount
+    - Vaults
+    properties:
+      HiddenVaultCount:
+        type: integer
+        format: int64
+      Vaults:
+        type: array
+        items:
+          $ref: '#/definitions/Vaults'
+    x-go-package: wallet/vault/application/getVaults
+  Group:
+    type: object
+    required:
+    - ApproverCount
+    - CreatedAt
+    - CreatedBy
+    - ID
+    - Name
+    - Users
+    properties:
+      ApproverCount:
+        type: integer
+        format: int64
+      CreatedAt:
+        type: string
+        format: date-time
+      CreatedBy:
+        type: string
+      ID:
+        type: string
+        format: uuid
+      Name:
+        type: string
+      Users:
+        type: array
+        items:
+          $ref: '#/definitions/DtoPolicyUser'
+    x-go-name: DtoGroup
+    x-go-package: wallet/policies/application/getGroup
+  GroupCreatedResponse:
+    type: object
+    required:
+    - ID
+    properties:
+      ID:
+        type: string
+        format: uuid
+    x-go-package: wallet/policies/application/createGroup
+  GroupableUser:
+    type: object
+    required:
+    - ID
+    - Name
+    properties:
+      ID:
+        type: string
+        format: uuid
+      Name:
+        type: string
+    x-go-name: DtoUser
+    x-go-package: wallet/policies/application/getGroupableUsers
+  Groups:
+    type: object
+    required:
+    - ApproverCount
+    - CreatedAt
+    - CreatedBy
+    - ID
+    - Name
+    properties:
+      ApproverCount:
+        type: integer
+        format: int64
+      CreatedAt:
+        type: string
+        format: date-time
+      CreatedBy:
+        type: string
+      ID:
+        type: string
+        format: uuid
+      Name:
+        type: string
+    x-go-name: DtoGroup
+    x-go-package: wallet/policies/application/getGroups
+  HealthResponse:
+    type: object
+    required:
+    - DatabaseHealth
+    - Healthy
+    properties:
+      DatabaseHealth:
+        $ref: '#/definitions/DatabaseHealth'
+      Healthy:
+        type: boolean
+    x-go-package: wallet/system/application/healthCheck
+  ImportableSystemUser:
+    type: object
+    required:
+    - MpaId
+    - Name
+    properties:
+      MpaId:
+        type: string
+      Name:
+        type: string
+    x-go-package: wallet/user/application/getImportableSystemUsers
+  MIMEHeader:
+    type: object
+    description: |-
+      A MIMEHeader represents a MIME-style header mapping
+      keys to sets of values.
+    additionalProperties:
+      type: array
+      items:
+        type: string
+    x-go-package: net/textproto
+  OverviewSummaryOfAsset:
+    type: object
+    required:
+    - Amount
+    - Asset
+    - Name
+    properties:
+      Amount:
+        type: string
+      Asset:
+        type: string
+      ContractAddress:
+        type: string
+      ExchangeRate:
+        type: string
+      Name:
+        type: string
+      USDAmount:
+        type: string
+    x-go-package: wallet/vault/application/getSummaryAssets
+  PendingExchangeRates:
+    type: object
+    required:
+    - CreatedAt
+    - CreatedBy
+    - Rates
+    - Status
+    - UpdatedAt
+    properties:
+      CreatedAt:
+        type: string
+      CreatedBy:
+        type: string
+      Rates:
+        type: array
+        items:
+          $ref: '#/definitions/DtoPendingChangesExchangeRate'
+      Status: {}
+      UpdatedAt:
+        type: string
+    x-go-package: wallet/asset/application/getAllExchangeRates
+  PendingPolicy:
+    type: object
+    required:
+    - CreatedAt
+    - CreatedBy
+    - Policies
+    - Status
+    - UpdatedAt
+    properties:
+      CreatedAt:
+        type: string
+      CreatedBy:
+        type: string
+      Policies:
+        type: array
+        items:
+          $ref: '#/definitions/TransactionPolicy'
+      Status:
+        type: string
+        description: |2-
+
+          PolicyUpdateAwaitingConfirmation PolicyUpdateAwaitingConfirmation
+          PolicyUpdateAwaitingApproval PolicyUpdateAwaitingApproval
+        enum:
+        - PolicyUpdateAwaitingConfirmation
+        - PolicyUpdateAwaitingApproval
+        x-go-enum-desc: |-
+          PolicyUpdateAwaitingConfirmation PolicyUpdateAwaitingConfirmation
+          PolicyUpdateAwaitingApproval PolicyUpdateAwaitingApproval
+      UpdatedAt:
+        type: string
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  PolicyAsset:
+    type: object
+    required:
+    - Abbreviation
+    - Name
+    properties:
+      Abbreviation:
+        type: string
+      Name:
+        type: string
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  PolicyDestination:
+    type: object
+    properties:
+      ExternalAddress:
+        type: string
+      VaultID:
+        type: string
+        format: uuid
+      VaultName:
+        type: string
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  PolicyGroup:
+    type: object
+    required:
+    - GroupId
+    - GroupName
+    properties:
+      GroupId:
+        type: string
+        format: uuid
+      GroupName:
+        type: string
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  PolicySource:
+    type: object
+    required:
+    - VaultID
+    - VaultName
+    properties:
+      VaultID:
+        type: string
+        format: uuid
+      VaultName:
+        type: string
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  ProblemDetails:
+    type: object
+    required:
+    - CorrelationId
+    - Status
+    - Title
+    - Type
+    properties:
+      CorrelationId:
+        type: string
+        description: CorrelationId is a convenience field since it's also declared as normal in the response header
+      Detail:
+        type: string
+        description: |-
+          Detail is a human-readable explanation specific to this
+          occurrence of the problem.
+          If present, it ought to focus on helping the client
+          correct the problem, rather than giving debugging information.
+      Errors:
+        type: array
+        description: Errors is a list of validation errors which is present only if the Status is 400
+        items:
+          $ref: '#/definitions/Error'
+      Instance:
+        type: string
+        description: |-
+          Instance is a URI reference that identifies the specific
+          occurrence of the problem.  It may or may not yield further
+          information if dereferenced.
+      Status:
+        type: integer
+        format: int64
+        description: |-
+          Status is the HTTP status code ([RFC7231], Section 6)
+          generated by the origin server for this occurrence of the problem.
+      Title:
+        type: string
+        description: |-
+          Title is a short, human-readable summary of the problem
+          type.  It SHOULD NOT change from occurrence to occurrence of the
+          problem, except for purposes of localization (e.g., using
+          proactive content negotiation; see [RFC7231], Section 3.4).
+      Type:
+        type: string
+        description: |-
+          Type is a URI reference [RFC3986] that identifies the
+          problem type. This specification encourages that, when
+          dereferenced, provides human-readable documentation for the
+          problem type (e.g., using HTML [W3C.REC-html5-20141028]). When
+          this member is not present, its value is assumed to be
+          "about:blank".
+          ObjectNotFound ObjectNotFound
+          ThirdPartyServiceUnavailable ThirdPartyServiceUnavailable
+          ThirdPartyServiceTimeout ThirdPartyServiceTimeout
+          ThirdPartyServiceUnknownError ThirdPartyServiceUnknownError
+          UnknownError UnknownError
+          ValidationError ValidationError
+          AuthorizationError AuthorizationError
+          PermissionError PermissionError
+          Conflict Conflict
+          Frozen Frozen
+        enum:
+        - ObjectNotFound
+        - ThirdPartyServiceUnavailable
+        - ThirdPartyServiceTimeout
+        - ThirdPartyServiceUnknownError
+        - UnknownError
+        - ValidationError
+        - AuthorizationError
+        - PermissionError
+        - Conflict
+        - Frozen
+        x-go-enum-desc: |-
+          ObjectNotFound ObjectNotFound
+          ThirdPartyServiceUnavailable ThirdPartyServiceUnavailable
+          ThirdPartyServiceTimeout ThirdPartyServiceTimeout
+          ThirdPartyServiceUnknownError ThirdPartyServiceUnknownError
+          UnknownError UnknownError
+          ValidationError ValidationError
+          AuthorizationError AuthorizationError
+          PermissionError PermissionError
+          Conflict Conflict
+          Frozen Frozen
+    x-go-package: wallet/foundation/web
+  RegisterUserRequest:
+    type: object
+    required:
+    - IdpUserId
+    - Name
+    - Role
+    properties:
+      IdpUserId:
+        type: string
+      Name:
+        type: string
+        pattern: ^[a-zA-Z0-9]+$
+      Role:
+        type: string
+        description: |2-
+
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+        enum:
+        - MarketOps
+        - Admin
+        - Viewer
+        x-go-enum-desc: |-
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+    x-go-package: wallet/user/application/registerUser
+  RemoveUserFromGroupRequest:
+    type: object
+    required:
+    - UserId
+    properties:
+      UserId:
+        type: string
+        format: uuid
+        description: The ID of the user you wish to remove.
+    x-go-package: wallet/policies/application/removeUserFromGroup
+  ResetUserResponse:
+    type: object
+    x-go-package: wallet/user/application/resetUser
+  RetryAddAddressRequest:
+    type: object
+    required:
+    - AddressName
+    - Asset
+    - VaultID
+    properties:
+      AddressName:
+        type: string
+      Asset:
+        type: string
+      VaultID:
+        type: string
+        format: uuid
+    x-go-package: wallet/vault/application/retryAddAddress
+  RevokeUserResponse:
+    type: object
+    x-go-package: wallet/user/application/revokeUser
+  SearchHiddenVaultsResponse:
+    type: object
+    required:
+    - Vaults
+    properties:
+      Vaults:
+        type: array
+        items:
+          $ref: '#/definitions/Vaults'
+    x-go-package: wallet/vault/application/searchVaults
+  SetExchangeRate:
+    type: object
+    required:
+    - Asset
+    properties:
+      Asset:
+        type: string
+      USDMax:
+        type: string
+      USDMin:
+        type: string
+      USDRate:
+        type: string
+    x-go-package: wallet/asset/application/setExchangeRate
+  SetExchangeRateRequest:
+    type: object
+    required:
+    - SetExchangeRates
+    properties:
+      SetExchangeRates:
+        type: array
+        items:
+          $ref: '#/definitions/SetExchangeRate'
+    x-go-package: wallet/asset/application/setExchangeRate
+  ShowTransactionsDto:
+    type: object
+    required:
+    - Amount
+    - Asset
+    - AssetName
+    - CreatedAt
+    - CreatedBy
+    - ExternalDestinationAddresses
+    - Id
+    - InternalDestination
+    - InternalSource
+    - StakingTransaction
+    - Status
+    - UpdatedAt
+    properties:
+      Amount:
+        type: string
+      Asset:
+        type: string
+      AssetName:
+        type: string
+      CreatedAt:
+        type: string
+      CreatedBy:
+        type: string
+      Destination:
+        $ref: '#/definitions/Destination'
+      ExternalDestinationAddresses:
+        type: array
+        items:
+          type: string
+      ExternalSourceAddresses:
+        type: array
+        items:
+          type: string
+      ExternalWithdrawDestinationAddress:
+        type: string
+      Id:
+        type: string
+        format: uuid
+      InternalDestination:
+        type: boolean
+      InternalSource:
+        type: boolean
+      Source:
+        $ref: '#/definitions/Source'
+      StakingTransaction:
+        type: boolean
+      Status:
+        type: string
+        description: |2-
+
+          New New
+          AwaitingConfirmation AwaitingConfirmation
+          AwaitingApproval AwaitingApproval
+          Approved Approved
+          Pooled Pooled
+          Stabilizing Stabilizing
+          Stable Stable
+          Rejected Rejected
+          Failed Failed
+        enum:
+        - New
+        - AwaitingConfirmation
+        - AwaitingApproval
+        - Approved
+        - Pooled
+        - Stabilizing
+        - Stable
+        - Rejected
+        - Failed
+        x-go-enum-desc: |-
+          New New
+          AwaitingConfirmation AwaitingConfirmation
+          AwaitingApproval AwaitingApproval
+          Approved Approved
+          Pooled Pooled
+          Stabilizing Stabilizing
+          Stable Stable
+          Rejected Rejected
+          Failed Failed
+      TxHash:
+        type: string
+      UpdatedAt:
+        type: string
+      WithdrawDestination:
+        $ref: '#/definitions/Destination'
+    x-go-name: DtoTransaction
+    x-go-package: wallet/transaction/application/showTransactions
+  ShowTransactionsResponse:
+    type: object
+    required:
+    - TotalCount
+    - Transactions
+    properties:
+      TotalCount:
+        type: integer
+        format: int64
+      Transactions:
+        type: array
+        items:
+          $ref: '#/definitions/ShowTransactionsDto'
+    x-go-package: wallet/transaction/application/showTransactions
+  Source:
+    type: object
+    required:
+    - Addresses
+    - VaultID
+    - VaultName
+    properties:
+      Addresses:
+        type: array
+        items:
+          type: string
+      VaultID:
+        type: string
+        format: uuid
+      VaultName:
+        type: string
+    x-go-package: wallet/transaction/application/getTransaction
+  StakingInfo:
+    $ref: '#/definitions/GetTransferDetailsResponse'
+  StakingRequest:
+    type: object
+    required:
+    - Amount
+    - Asset
+    - FeePriority
+    - FeeRate
+    - FromVaultId
+    - WithdrawalAddress
+    properties:
+      Amount:
+        type: string
+      Asset:
+        type: string
+      FeePriority:
+        type: string
+        description: |2-
+
+          Low Low
+          Medium Medium
+          High High
+          Custom Custom
+        enum:
+        - Low
+        - Medium
+        - High
+        - Custom
+        x-go-enum-desc: |-
+          Low Low
+          Medium Medium
+          High High
+          Custom Custom
+      FeeRate:
+        type: string
+      FromVaultId:
+        type: string
+        format: uuid
+      WithdrawalAddress:
+        type: string
+    x-go-package: wallet/transaction/application/staking
+  StakingResponse:
+    type: object
+    required:
+    - Id
+    properties:
+      Id:
+        type: string
+        format: uuid
+    x-go-package: wallet/transaction/application/staking
+  SynchronousVaultCreatedResponse:
+    type: object
+    required:
+    - ID
+    properties:
+      ID:
+        type: string
+        format: uuid
+        description: The wallet's internal ID of the Vault
+    x-go-package: wallet/vault/application/createVault
+  SystemUser:
+    type: object
+    required:
+    - CreatedAt
+    - Id
+    - MpaId
+    - Name
+    - Role
+    - State
+    - WalletPublicKey
+    properties:
+      CreatedAt:
+        type: string
+        format: date-time
+      Id:
+        type: string
+        format: uuid
+      MpaId:
+        type: string
+      Name:
+        type: string
+      Role:
+        type: string
+        description: |2-
+
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+        enum:
+        - MarketOps
+        - Admin
+        - Viewer
+        x-go-enum-desc: |-
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+      State:
+        type: string
+        description: |2-
+
+          New New
+          Pending Confirmation PendingConfirmation
+          Pending Approval PendingApproval
+          Pending Onboarding PendingOnboarding
+          Pending Revocation PendingRevocation
+          Pending Reset PendingReset
+          Revoked Revoked
+          Rejected Rejected
+          Failed Failed
+          Active Active
+        enum:
+        - New
+        - Pending Confirmation
+        - Pending Approval
+        - Pending Onboarding
+        - Pending Revocation
+        - Pending Reset
+        - Revoked
+        - Rejected
+        - Failed
+        - Active
+        x-go-enum-desc: |-
+          New New
+          Pending Confirmation PendingConfirmation
+          Pending Approval PendingApproval
+          Pending Onboarding PendingOnboarding
+          Pending Revocation PendingRevocation
+          Pending Reset PendingReset
+          Revoked Revoked
+          Rejected Rejected
+          Failed Failed
+          Active Active
+      WalletPublicKey:
+        type: string
+    x-go-package: wallet/user/application/getUsers
+  SystemUserEnabledResponse:
+    type: object
+    required:
+    - ApiKey
+    properties:
+      ApiKey:
+        type: string
+        format: uuid
+        description: ApiKey that the API User must include in a JWT for every request in the "sub" field.
+    x-go-package: wallet/user/application/enableSystemUser
+  TransactionPolicy:
+    type: object
+    required:
+    - ApprovalExpression
+    - ApprovalExpressionType
+    - DestinationType
+    - MinAmount
+    properties:
+      ApprovalExpression:
+        type: array
+        description: The expression which must hold. We require at least one element in the list. Multiple elements are interpreted as having "Then" operators between them. So "level 1" must approve before "level 2" is asked to approve.
+        items:
+          $ref: '#/definitions/ApprovalExp'
+      ApprovalExpressionType:
+        type: string
+        description: |-
+          The type of approval expression. If PolicyGroup is chosen, the ApprovalExpression property should contain a minimum of 1 element
+          Group Group
+          Allow Allow
+          Block BlockType
+        enum:
+        - Group
+        - Allow
+        - Block
+        x-go-enum-desc: |-
+          Group Group
+          Allow Allow
+          Block BlockType
+      Assets:
+        type: array
+        description: If present, the assets for which the policy should apply, if not present it signifies all assets.
+        items:
+          type: string
+      DestinationType:
+        type: string
+        description: |-
+          DestinationType The type of Destinations for which this policy should apply
+          Any Any
+          AnyVault AnyAccount
+          AnyExternalAddress AnyExternalAddress
+          Vault Account
+          ExternalAddress ExternalAddress
+        enum:
+        - Any
+        - AnyVault
+        - AnyExternalAddress
+        - Vault
+        - ExternalAddress
+        x-go-enum-desc: |-
+          Any Any
+          AnyVault AnyAccount
+          AnyExternalAddress AnyExternalAddress
+          Vault Account
+          ExternalAddress ExternalAddress
+      Destinations:
+        type: array
+        description: Destinations for which the policy should apply. Can be either a list of external addresses, internal vaultIds or the empty list depending on the DestinationType
+        items:
+          $ref: '#/definitions/PolicyDestination'
+      MinAmount:
+        type: number
+        format: double
+        description: In currency determined by MinAmountCurrency
+      Sources:
+        type: array
+        description: Sources source vaults, if the list is empty it signifies the "Any" source.
+        items:
+          $ref: '#/definitions/PolicySource'
+      TriggerGroup:
+        $ref: '#/definitions/PolicyGroup'
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  TransactionPolicyListResponse:
+    type: object
+    required:
+    - ApprovalGroups
+    - Assets
+    - Policies
+    - Sources
+    - TriggerGroups
+    properties:
+      ApprovalGroups:
+        type: array
+        items:
+          $ref: '#/definitions/PolicyGroup'
+      Assets:
+        type: array
+        items:
+          $ref: '#/definitions/PolicyAsset'
+      Pending:
+        $ref: '#/definitions/PendingPolicy'
+      Policies:
+        type: array
+        items:
+          $ref: '#/definitions/TransactionPolicy'
+      Sources:
+        type: array
+        items:
+          $ref: '#/definitions/PolicySource'
+      TriggerGroups:
+        type: array
+        items:
+          $ref: '#/definitions/PolicyGroup'
+    x-go-package: wallet/policies/application/getTransactionPolicyList
+  TransactionPolicyRequest:
+    type: object
+    required:
+    - ApprovalExpressionType
+    - DestinationType
+    - MinAmount
+    properties:
+      ApprovalExpression:
+        type: array
+        description: The expression which must hold. We require at least one element in the list. Multiple elements are interpreted as having "Then" operators between them. So "level 1" must approve before "level 2" is asked to approve.
+        items:
+          $ref: '#/definitions/ApprovalExpRequest'
+      ApprovalExpressionType:
+        type: string
+        description: |-
+          The type of approval expression. If Group is chosen, the ApprovalExpression property should contain a minimum of 1 element
+          Group Group
+          Allow Allow
+          Block BlockType
+        enum:
+        - Group
+        - Allow
+        - Block
+        x-go-enum-desc: |-
+          Group Group
+          Allow Allow
+          Block BlockType
+      Assets:
+        type: array
+        description: |-
+          If present, the assets for which the policy should apply, if not present it signifies all assets.
+          If contains/signifies more than one asset, then MinAmountCurrency must be USD(null).
+        items:
+          type: string
+      DestinationType:
+        type: string
+        description: |-
+          DestinationType The type of Destinations for which this policy should apply
+          Any Any
+          AnyVault AnyAccount
+          AnyExternalAddress AnyExternalAddress
+          Vault Account
+          ExternalAddress ExternalAddress
+        enum:
+        - Any
+        - AnyVault
+        - AnyExternalAddress
+        - Vault
+        - ExternalAddress
+        x-go-enum-desc: |-
+          Any Any
+          AnyVault AnyAccount
+          AnyExternalAddress AnyExternalAddress
+          Vault Account
+          ExternalAddress ExternalAddress
+      Destinations:
+        type: array
+        description: Destinations for which the policy should apply. Can be either a list of external addresses, internal vaultIds or the empty list depending on the DestinationType
+        items:
+          $ref: '#/definitions/TransactionPolicyRequest_Destinations'
+      MinAmount:
+        type: number
+        format: double
+        description: In currency determined by MinAmountCurrency
+      MinAmountCurrency:
+        type: string
+        description: If not present currency is USD. Can only be an asset, if that same asset is the only asset in the Assets field, i.e a policy cannot have a minimum in ethereum if it applies to bitcoin.
+      SourceVaultIds:
+        type: array
+        description: Ids of source vaults, if the list is empty it signifies the "Any" source.
+        items:
+          type: string
+          format: uuid
+      TriggerGroupId:
+        type: string
+        format: uuid
+        description: Id of triggering group or system user, if not present signifies the "All Human Users" group
+    x-go-package: wallet/policies/application/updateTransactionPolicyList
+  TransactionRequest:
+    type: object
+    required:
+    - Amount
+    - Asset
+    - Destination
+    - FeePriority
+    - FeeRate
+    - FromVaultId
+    - Gross
+    - IsInternal
+    properties:
+      Amount:
+        type: string
+      Asset:
+        type: string
+      Destination:
+        type: string
+      FeePriority:
+        type: string
+        description: |2-
+
+          Low Low
+          Medium Medium
+          High High
+          Custom Custom
+        enum:
+        - Low
+        - Medium
+        - High
+        - Custom
+        x-go-enum-desc: |-
+          Low Low
+          Medium Medium
+          High High
+          Custom Custom
+      FeeRate:
+        type: string
+      FromVaultId:
+        type: string
+        format: uuid
+      Gross:
+        type: boolean
+      IsInternal:
+        type: boolean
+    x-go-package: wallet/transaction/application/transferFunds
+  TransactionResponse:
+    type: object
+    required:
+    - Id
+    properties:
+      Id:
+        type: string
+        format: uuid
+    x-go-package: wallet/transaction/application/transferFunds
+  TransactionStateChangedHookDto:
+    type: object
+    properties:
+      APIKey:
+        type: string
+      InternalTXId:
+        type: string
+        format: uuid
+      Timestamp:
+        type: string
+        format: date-time
+      TxHash:
+        type: string
+      UpdatedStatus:
+        type: string
+        enum:
+        - New
+        - AwaitingConfirmation
+        - AwaitingApproval
+        - Approved
+        - Pooled
+        - Stabilizing
+        - Stable
+        - Rejected
+        - Failed
+        x-go-enum-desc: |-
+          New New
+          AwaitingConfirmation AwaitingConfirmation
+          AwaitingApproval AwaitingApproval
+          Approved Approved
+          Pooled Pooled
+          Stabilizing Stabilizing
+          Stable Stable
+          Rejected Rejected
+          Failed Failed
+    x-go-package: wallet/transaction/eventHandler
+  TransactionSynchronousRequest:
+    type: object
+    required:
+    - Asset
+    - Destinations
+    - FeePriority
+    - FeeRate
+    - FromAccountName
+    - Gross
+    - IsInternal
+    properties:
+      Asset:
+        type: string
+        description: Abbreviation of the currency you wish to transfer. Ex. "BTC"
+      Destinations:
+        type: array
+        description: |-
+          Pairs of Name of the destination account that will receive the transaction if internal or
+          Address of receiver if external as well as the amount to transfer. If the transaction is internal, this list can only contain a single element
+        items:
+          $ref: '#/definitions/DestinationAndAmount'
+      FeePriority:
+        type: string
+        description: |-
+          An enum indicating the priority at which you want the transaction to be included in a block. This will affect the feerate.
+          Custom indicates that you have set a custom feerate, which will be used as is.
+          High, Medium, Low indicates a decreasing level of priority. Feerate will then be set to reflect the intention of how quickly the transaction should be accepted in a block.
+          Optimization will be attempted in order to reduce the fee, matching the priority, while still respecting the cap set in the Feerate field.
+          Low Low
+          Medium Medium
+          High High
+          Custom Custom
+        enum:
+        - Low
+        - Medium
+        - High
+        - Custom
+        x-go-enum-desc: |-
+          Low Low
+          Medium Medium
+          High High
+          Custom Custom
+      FeeRate:
+        type: string
+        description: |-
+          A string containing the rate of fee per. byte on the transaction with 3 decimals.
+          Must be denoted in the smallest denomination of the currency. So if you want to send a transaction with a feerate of 0.00000020 bitcoin/byte, feerate should be "20.000".
+          This number will be treated as a max rate, so regardless of priority, the fee will never exceed the cap set in this field.
+      FromAccountName:
+        type: string
+        description: Name of the account that sends the transaction.
+      Gross:
+        type: boolean
+        description: |-
+          A boolean indicating whether the fee should be included in the amount or if it should be added to it.
+          Ex. you want to transfer 0.5 BTC, amount should be 0.5 and Gross should be false.
+          If you want to send all the money on the account, amount should be the total amount and Gross should be true.
+      IsInternal:
+        type: boolean
+        description: A boolean indicating whether the transaction is to an internal account.
+    x-go-package: wallet/transaction/application/transferFunds
+  TransactionSynchronousResponse:
+    type: object
+    required:
+    - ID
+    properties:
+      ID:
+        type: string
+        format: uuid
+        description: The wallets internal ID of the transaction
+    x-go-package: wallet/transaction/application/transferFunds
+  TransferAssetDetailVault:
+    type: object
+    required:
+    - Amount
+    - CreatedAt
+    - ID
+    - Name
+    properties:
+      Amount:
+        type: string
+      CreatedAt:
+        type: string
+        format: date-time
+      ID:
+        type: string
+        format: uuid
+      Name:
+        type: string
+    x-go-package: wallet/transaction/application/getAssetDetailsTransaction
+  TransferAssetDetailsDto:
+    type: object
+    required:
+    - Fee
+    - IsERC20
+    - Vaults
+    properties:
+      ExchangeRate:
+        type: string
+      Fee:
+        $ref: '#/definitions/TransferDetailsFeeDto'
+      IsERC20:
+        type: boolean
+      Vaults:
+        type: array
+        items:
+          $ref: '#/definitions/TransferDetailsVaultDto'
+    x-go-package: wallet/transaction/application/getTransferDetails
+  TransferAssetDetailsFeeRates:
+    type: object
+    required:
+    - FeeExchangeAsset
+    - Precision
+    - Rates
+    - Size
+    - Unit
+    properties:
+      FeeExchangeAsset:
+        type: string
+      FeeExchangeRate:
+        type: string
+      Precision:
+        type: integer
+        format: int64
+      Rates:
+        $ref: '#/definitions/TransferAssetFeeRates'
+      Size:
+        type: string
+      Unit:
+        type: string
+    x-go-package: wallet/transaction/application/getAssetDetailsTransaction
+  TransferAssetDetailsResponse:
+    type: object
+    required:
+    - Asset
+    - Vaults
+    properties:
+      Asset:
+        $ref: '#/definitions/TransferAssetDetailsSummary'
+      Vaults:
+        type: array
+        items:
+          $ref: '#/definitions/TransferAssetDetailVault'
+    x-go-package: wallet/transaction/application/getAssetDetailsTransaction
+  TransferAssetDetailsSummary:
+    type: object
+    required:
+    - Amount
+    properties:
+      Amount:
+        type: string
+    x-go-package: wallet/transaction/application/getAssetDetailsTransaction
+  TransferAssetFeeRates:
+    type: object
+    required:
+    - High
+    - Low
+    - Medium
+    properties:
+      High:
+        type: string
+      Low:
+        type: string
+      Medium:
+        type: string
+    x-go-package: wallet/transaction/application/getAssetDetailsTransaction
+  TransferDetailsAssetDto:
+    type: object
+    required:
+    - Abbreviation
+    - Amount
+    - Name
+    properties:
+      Abbreviation:
+        type: string
+      Amount:
+        type: string
+      Name:
+        type: string
+    x-go-package: wallet/transaction/application/getTransferDetails
+  TransferDetailsFeeDto:
+    type: object
+    required:
+    - FeeExchangeAsset
+    - FlatFee
+    - Precision
+    - Rates
+    - Size
+    - Unit
+    properties:
+      FeeExchangeAsset:
+        type: string
+      FeeExchangeRate:
+        type: string
+      FlatFee:
+        type: boolean
+      Precision:
+        type: integer
+        format: int64
+      Rates:
+        $ref: '#/definitions/TransferDetailsFeeRatesDto'
+      Size:
+        type: string
+      Unit:
+        type: string
+    x-go-package: wallet/transaction/application/getTransferDetails
+  TransferDetailsFeeRatesDto:
+    type: object
+    required:
+    - High
+    - Low
+    - Medium
+    properties:
+      High:
+        type: string
+      Low:
+        type: string
+      Medium:
+        type: string
+    x-go-package: wallet/transaction/application/getTransferDetails
+  TransferDetailsVaultDto:
+    type: object
+    required:
+    - Amount
+    - Id
+    - Name
+    properties:
+      Amount:
+        type: string
+      Id:
+        type: string
+        format: uuid
+      Name:
+        type: string
+    x-go-package: wallet/transaction/application/getTransferDetails
+  UnFreezeRequest:
+    type: object
+    x-go-package: wallet/transaction/application/unfreeze
+  UnFreezeResponse:
+    type: object
+    x-go-package: wallet/transaction/application/unfreeze
+  UpdateTransactionPolicyListRequest:
+    type: object
+    required:
+    - Policies
+    properties:
+      Policies:
+        type: array
+        items:
+          $ref: '#/definitions/TransactionPolicyRequest'
+    x-go-package: wallet/policies/application/updateTransactionPolicyList
+  User:
+    type: object
+    required:
+    - CreatedAt
+    - Id
+    - IdpUserId
+    - Name
+    - Role
+    - State
+    properties:
+      CreatedAt:
+        type: string
+        format: date-time
+      Id:
+        type: string
+        format: uuid
+      IdpUserId:
+        type: string
+      Name:
+        type: string
+      Role:
+        type: string
+        description: |2-
+
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+        enum:
+        - MarketOps
+        - Admin
+        - Viewer
+        x-go-enum-desc: |-
+          MarketOps MarketOps
+          Admin Admin
+          Viewer Viewer
+      State:
+        type: string
+        description: |2-
+
+          New New
+          Pending Confirmation PendingConfirmation
+          Pending Approval PendingApproval
+          Pending Onboarding PendingOnboarding
+          Pending Revocation PendingRevocation
+          Pending Reset PendingReset
+          Revoked Revoked
+          Rejected Rejected
+          Failed Failed
+          Active Active
+        enum:
+        - New
+        - Pending Confirmation
+        - Pending Approval
+        - Pending Onboarding
+        - Pending Revocation
+        - Pending Reset
+        - Revoked
+        - Rejected
+        - Failed
+        - Active
+        x-go-enum-desc: |-
+          New New
+          Pending Confirmation PendingConfirmation
+          Pending Approval PendingApproval
+          Pending Onboarding PendingOnboarding
+          Pending Revocation PendingRevocation
+          Pending Reset PendingReset
+          Revoked Revoked
+          Rejected Rejected
+          Failed Failed
+          Active Active
+    x-go-package: wallet/user/application/getUsers
+  UserRegisteredResponse:
+    type: object
+    required:
+    - ID
+    properties:
+      ID:
+        type: string
+        format: uuid
+    x-go-package: wallet/user/application/registerUser
+  Vault:
+    type: object
+    required:
+    - Assets
+    - CreatedAt
+    - CreatedBy
+    - Hidden
+    - ID
+    - Name
+    - State
+    - USDAmount
+    properties:
+      Assets:
+        type: array
+        items:
+          $ref: '#/definitions/AssetSummary'
+      CreatedAt:
+        type: string
+        format: date-time
+      CreatedBy:
+        type: string
+      Hidden:
+        type: boolean
+      ID:
+        type: string
+        format: uuid
+      Name:
+        type: string
+      State:
+        type: string
+        description: |2-
+
+          VaultCreationInProgress VaultCreationInProgress
+          VaultCreationFailure VaultCreationFailure
+          VaultCreationSuccess VaultCreationSuccess
+        enum:
+        - VaultCreationInProgress
+        - VaultCreationFailure
+        - VaultCreationSuccess
+        x-go-enum-desc: |-
+          VaultCreationInProgress VaultCreationInProgress
+          VaultCreationFailure VaultCreationFailure
+          VaultCreationSuccess VaultCreationSuccess
+      USDAmount:
+        type: string
+    x-go-name: DtoVault
+    x-go-package: wallet/vault/application/getVault
+  VaultCreatedResponse:
+    type: object
+    required:
+    - ID
+    properties:
+      ID:
+        type: string
+        format: uuid
+    x-go-package: wallet/vault/application/createVault
+  Vaults:
+    type: object
+    required:
+    - Assets
+    - CreatedAt
+    - CreatedBy
+    - ID
+    - Name
+    - State
+    - USDAmount
+    properties:
+      Assets:
+        type: array
+        items:
+          $ref: '#/definitions/AssetSummary'
+      CreatedAt:
+        type: string
+        format: date-time
+      CreatedBy:
+        type: string
+      ID:
+        type: string
+        format: uuid
+      Name:
+        type: string
+      State:
+        type: string
+        description: |2-
+
+          VaultCreationInProgress VaultCreationInProgress
+          VaultCreationFailure VaultCreationFailure
+          VaultCreationSuccess VaultCreationSuccess
+        enum:
+        - VaultCreationInProgress
+        - VaultCreationFailure
+        - VaultCreationSuccess
+        x-go-enum-desc: |-
+          VaultCreationInProgress VaultCreationInProgress
+          VaultCreationFailure VaultCreationFailure
+          VaultCreationSuccess VaultCreationSuccess
+      USDAmount:
+        type: string
+    x-go-name: DtoVault
+    x-go-package: wallet/vault/application/getVaults
+  WSMessage:
+    type: object
+    required:
+    - MessageType
+    - Payload
+    properties:
+      MessageType:
+        type: string
+        description: |-
+          The type of incoming message
+          Notification WSNotification
+          TransactionCreationInitiated WSTransactionCreationInitiated
+          TransactionPendingConfirmation WSTransactionPendingConfirmation
+          TransactionApproved WSTransactionApproved
+          TransactionFailed WSTransactionFailed
+          TransactionConfirmed WSTransactionConfirmed
+          TransactionPushed WSTransactionPushed
+          TransactionRejected WSTransactionRejected
+          TransactionStabilizing WSTransactionStabilizing
+          TransactionStable WSTransactionStable
+          TransactionPulled WSTransactionPulled
+          TransactionMemPoolReturned WSTransactionMemPoolReturned
+          TransactionConfirmationsUpdated WSTransactionConfirmationsUpdated
+          VaultCreationInitiated WSVaultCreationInitiated
+          VaultCreationSucceeded WSVaultCreationSucceeded
+          VaultCreationFailure WSVaultCreationFailure
+          BalanceUpdated WSBalanceUpdated
+          AssetAdded WsAssetAdded
+          AddressGenerated WSAddressGenerated
+          AddressGenerationFailed WSAddressGenerationFailed
+          UserCreationInitiated WSUserCreationInitiated
+          UserPendingConfirmation WSUserPendingConfirmation
+          UserConfirmed WSUserConfirmed
+          UserApproved WSUserApproved
+          UserRevocationPending WSUserRevocationPending
+          UserResetPending WSUserResetPending
+          UserResetConfirmed WSUserResetConfirmed
+          UserResetRejected WsUserResetRejected
+          UserResetFailed WsUserResetFailed
+          UserRevoked WSUserRevoked
+          UserRejected WSUserRejected
+          UserActivated WSUserActivated
+          UserRegistrationFailed WSUserRegistrationFailed
+          SystemUserDisabled WSSystemUserDisabled
+          SystemUserEnabled WSSystemUserEnabled
+          GroupCreated WsGroupCreated
+          UserAddedToGroup WSUserAddedToGroup
+          UserAddedToGroupFailed WSUserAddedToGroupFailed
+          UserAddedToGroupRejected WSUserAddedToGroupRejected
+          UserRemovedFromGroup WSUserRemovedFromGroup
+          UserRemovedFromGroupFailed WSUserRemovedFromGroupFailed
+          UserRemovedFromGroupRejected WSUserRemovedFromGroupRejected
+          TransactionPolicyUpdateInitiated WSTransactionPolicyUpdateInitiated
+          TransactionPolicyUpdated WSTransactionPolicyUpdated
+          TransactionPolicyUpdateFailed WSTransactionPolicyUpdateFailed
+          TransactionPolicyUpdateRejected WSTransactionPolicyUpdateRejected
+          TransactionPolicyUpdateConfirmed WSTransactionPolicyUpdateConfirmed
+          ExchangeRateUpdateCreated WSExchangeRateUpdateCreated
+          ExchangeRateUpdateConfirmed WSExchangeRateUpdateConfirmed
+          ExchangeRateUpdateFailed WSExchangeRateUpdateFailed
+          ExchangeRateUpdateRejected WSExchangeRateUpdateRejected
+          ExchangeRateUpdateSuccess WSExchangeRateUpdateSuccess
+          ExchangeRateUpdatePendingConfirmation WSExchangeRateUpdatePendingConfirmation
+          ERC20UpdateConfirmed WSERC20UpdateConfirmed
+          ERC20UpdateFailed WSERC20UpdateFailed
+          ERC20UpdateRejected WSERC20UpdateRejected
+          ERC20UpdateSuccess WSERC20UpdateSuccess
+          ERC20UpdatePendingConfirmation WSERC20UpdatePendingConfirmation
+          WSWalletFrozen WSWalletFrozen
+          WSWalletUnfrozen WSWalletUnfrozen
+        enum:
+        - Notification
+        - TransactionCreationInitiated
+        - TransactionPendingConfirmation
+        - TransactionApproved
+        - TransactionFailed
+        - TransactionConfirmed
+        - TransactionPushed
+        - TransactionRejected
+        - TransactionStabilizing
+        - TransactionStable
+        - TransactionPulled
+        - TransactionMemPoolReturned
+        - TransactionConfirmationsUpdated
+        - VaultCreationInitiated
+        - VaultCreationSucceeded
+        - VaultCreationFailure
+        - BalanceUpdated
+        - AssetAdded
+        - AddressGenerated
+        - AddressGenerationFailed
+        - UserCreationInitiated
+        - UserPendingConfirmation
+        - UserConfirmed
+        - UserApproved
+        - UserRevocationPending
+        - UserResetPending
+        - UserResetConfirmed
+        - UserResetRejected
+        - UserResetFailed
+        - UserRevoked
+        - UserRejected
+        - UserActivated
+        - UserRegistrationFailed
+        - SystemUserDisabled
+        - SystemUserEnabled
+        - GroupCreated
+        - UserAddedToGroup
+        - UserAddedToGroupFailed
+        - UserAddedToGroupRejected
+        - UserRemovedFromGroup
+        - UserRemovedFromGroupFailed
+        - UserRemovedFromGroupRejected
+        - TransactionPolicyUpdateInitiated
+        - TransactionPolicyUpdated
+        - TransactionPolicyUpdateFailed
+        - TransactionPolicyUpdateRejected
+        - TransactionPolicyUpdateConfirmed
+        - ExchangeRateUpdateCreated
+        - ExchangeRateUpdateConfirmed
+        - ExchangeRateUpdateFailed
+        - ExchangeRateUpdateRejected
+        - ExchangeRateUpdateSuccess
+        - ExchangeRateUpdatePendingConfirmation
+        - ERC20UpdateConfirmed
+        - ERC20UpdateFailed
+        - ERC20UpdateRejected
+        - ERC20UpdateSuccess
+        - ERC20UpdatePendingConfirmation
+        - WSWalletFrozen
+        - WSWalletUnfrozen
+        x-go-enum-desc: |-
+          Notification WSNotification
+          TransactionCreationInitiated WSTransactionCreationInitiated
+          TransactionPendingConfirmation WSTransactionPendingConfirmation
+          TransactionApproved WSTransactionApproved
+          TransactionFailed WSTransactionFailed
+          TransactionConfirmed WSTransactionConfirmed
+          TransactionPushed WSTransactionPushed
+          TransactionRejected WSTransactionRejected
+          TransactionStabilizing WSTransactionStabilizing
+          TransactionStable WSTransactionStable
+          TransactionPulled WSTransactionPulled
+          TransactionMemPoolReturned WSTransactionMemPoolReturned
+          TransactionConfirmationsUpdated WSTransactionConfirmationsUpdated
+          VaultCreationInitiated WSVaultCreationInitiated
+          VaultCreationSucceeded WSVaultCreationSucceeded
+          VaultCreationFailure WSVaultCreationFailure
+          BalanceUpdated WSBalanceUpdated
+          AssetAdded WsAssetAdded
+          AddressGenerated WSAddressGenerated
+          AddressGenerationFailed WSAddressGenerationFailed
+          UserCreationInitiated WSUserCreationInitiated
+          UserPendingConfirmation WSUserPendingConfirmation
+          UserConfirmed WSUserConfirmed
+          UserApproved WSUserApproved
+          UserRevocationPending WSUserRevocationPending
+          UserResetPending WSUserResetPending
+          UserResetConfirmed WSUserResetConfirmed
+          UserResetRejected WsUserResetRejected
+          UserResetFailed WsUserResetFailed
+          UserRevoked WSUserRevoked
+          UserRejected WSUserRejected
+          UserActivated WSUserActivated
+          UserRegistrationFailed WSUserRegistrationFailed
+          SystemUserDisabled WSSystemUserDisabled
+          SystemUserEnabled WSSystemUserEnabled
+          GroupCreated WsGroupCreated
+          UserAddedToGroup WSUserAddedToGroup
+          UserAddedToGroupFailed WSUserAddedToGroupFailed
+          UserAddedToGroupRejected WSUserAddedToGroupRejected
+          UserRemovedFromGroup WSUserRemovedFromGroup
+          UserRemovedFromGroupFailed WSUserRemovedFromGroupFailed
+          UserRemovedFromGroupRejected WSUserRemovedFromGroupRejected
+          TransactionPolicyUpdateInitiated WSTransactionPolicyUpdateInitiated
+          TransactionPolicyUpdated WSTransactionPolicyUpdated
+          TransactionPolicyUpdateFailed WSTransactionPolicyUpdateFailed
+          TransactionPolicyUpdateRejected WSTransactionPolicyUpdateRejected
+          TransactionPolicyUpdateConfirmed WSTransactionPolicyUpdateConfirmed
+          ExchangeRateUpdateCreated WSExchangeRateUpdateCreated
+          ExchangeRateUpdateConfirmed WSExchangeRateUpdateConfirmed
+          ExchangeRateUpdateFailed WSExchangeRateUpdateFailed
+          ExchangeRateUpdateRejected WSExchangeRateUpdateRejected
+          ExchangeRateUpdateSuccess WSExchangeRateUpdateSuccess
+          ExchangeRateUpdatePendingConfirmation WSExchangeRateUpdatePendingConfirmation
+          ERC20UpdateConfirmed WSERC20UpdateConfirmed
+          ERC20UpdateFailed WSERC20UpdateFailed
+          ERC20UpdateRejected WSERC20UpdateRejected
+          ERC20UpdateSuccess WSERC20UpdateSuccess
+          ERC20UpdatePendingConfirmation WSERC20UpdatePendingConfirmation
+          WSWalletFrozen WSWalletFrozen
+          WSWalletUnfrozen WSWalletUnfrozen
+      Payload:
+        type: string
+        description: |-
+          Json encoded string which should be decoded according to the MessageType param. Structure follows as shown here in pseudocode:</br>
+          switch MessageType{</br>
+          case Notification:</br>
+          Payload is a DtoNotification</br>
+          case Transaction*:</br>
+          Payload is a WsTransactionDto</br>
+          case VaultCreation*:</br>
+          Payload is a WsVaultDto</br>
+          case BalanceUpdated:</br>
+          Payload is a WsBalanceUpdatedDto</br>
+          case AddressGenerated, AddressGenerationFailed:</br>
+          Payload is a WsAddressDto</br>
+          case GroupCreated:</br>
+          Payload is a WsGroupDto</br>
+          case UserConfirmed, UserApproved, UserRevocationPending, UserRejected, UserRevoked, UserActivated, UserRegistrationFailed:</br>
+          Payload is a WsUserDto</br>
+          case UserAddedToGroup*, UserRemovedFromGroup*:</br>
+          Payload is a WsUserGroupDto</br>
+          case TransactionPolicy*:</br>
+          Payload is empty
+    x-go-package: wallet/notification/application
+  WsAddressDto:
+    type: object
+    required:
+    - Asset
+    - Name
+    - VaultId
+    properties:
+      Asset:
+        type: string
+      Name:
+        type: string
+      VaultId:
+        type: string
+        format: uuid
+    x-go-package: wallet/notification/application
+  WsAssetAddedDto:
+    type: object
+    properties:
+      Asset:
+        type: string
+      VaultId:
+        type: string
+        format: uuid
+    x-go-package: wallet/notification/application
+  WsBalanceUpdatedDto:
+    type: object
+    required:
+    - Asset
+    - NewBalance
+    - VaultId
+    properties:
+      Asset:
+        type: string
+      NewBalance:
+        type: string
+      VaultId:
+        type: string
+        format: uuid
+    x-go-package: wallet/notification/application
+  WsErc20AssetDto:
+    type: object
+    properties:
+      Asset:
+        type: string
+    x-go-package: wallet/notification/application
+  WsExchangeRateDto:
+    type: object
+    x-go-package: wallet/notification/application
+  WsGroupDto:
+    type: object
+    required:
+    - GroupId
+    - GroupName
+    properties:
+      GroupId:
+        type: string
+        format: uuid
+      GroupName:
+        type: string
+    x-go-package: wallet/notification/application
+  WsSystemUserDto:
+    type: object
+    required:
+    - UserId
+    properties:
+      UserId:
+        type: string
+        format: uuid
+    x-go-package: wallet/notification/application
+  WsTransactionDto:
+    type: object
+    required:
+    - TxId
+    properties:
+      TxId:
+        type: string
+        format: uuid
+    x-go-package: wallet/notification/application
+  WsTransactionPolicyDto:
+    type: object
+    x-go-package: wallet/notification/application
+  WsUserDto:
+    type: object
+    required:
+    - UserId
+    properties:
+      UserId:
+        type: string
+        format: uuid
+    x-go-package: wallet/notification/application
+  WsUserGroupDto:
+    type: object
+    required:
+    - GroupId
+    - GroupName
+    - UserId
+    - UserIdpId
+    - UserName
+    properties:
+      GroupId:
+        type: string
+        format: uuid
+      GroupName:
+        type: string
+      UserId:
+        type: string
+        format: uuid
+      UserIdpId:
+        type: string
+      UserName:
+        type: string
+    x-go-package: wallet/notification/application
+  WsVaultDto:
+    type: object
+    required:
+    - VaultId
+    properties:
+      VaultId:
+        type: string
+        format: uuid
+    x-go-package: wallet/notification/application
+  WsWalletFrozenDto:
+    type: object
+    x-go-package: wallet/notification/application
+  WsWalletUnfrozenDto:
+    type: object
+    x-go-package: wallet/notification/application
+  inline_response_200:
+    type: object
+    required:
+    - Notifications
+    properties:
+      Notifications:
+        type: array
+        items:
+          $ref: '#/definitions/DtoNotification'
+  TransactionPolicyRequest_Destinations:
+    type: object
+    properties:
+      ExternalAddress:
+        type: string
+      VaultId:
+        type: string
+        format: uuid
+responses:
+  AccountCreatedSynchronouslyResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/SynchronousVaultCreatedResponse'
+  AddAddressSynchronouslyResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/AddAddressSynchronouslyResponse'
+  AddAddressValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid, InvalidAddressName, InvalidAsset, MultipleAddressesNotAllowed
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  AddAssetResponseWrapper:
+    description: ""
+  AddAssetSynchronouslyResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/AddAssetSynchronouslyResponse'
+  AddAssetValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid, InvalidAsset
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  AddUserResponseWrapper:
+    description: ""
+  AssetIconWrapper:
+    description: ""
+    schema:
+      type: array
+      items:
+        type: integer
+        format: uint8
+  ConflictResponse:
+    description: Conflict
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  CreateGroupValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGroupName
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  CreateVaultValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidVaultName
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  DisableSystemUserResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/DisableSystemUserResponse'
+  DisableSystemUserValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  EnableSystemUserValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidUserRole, InvalidIdpUserId, InvalidUserName, InvalidCallbackURL, InvalidPublicKey
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  ErrorResponseWrapper:
+    description: Internal error
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  ExportTransactionsValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidSenderVaultId, InvalidDestinationVaultId, InvalidTransactionState, InvalidStartDate, InvalidEndDate, InvalidOrderDirectionQuery, InvalidOrderByQuery, InvalidAsset
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  FileResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/File'
+  ForbiddenResponse:
+    description: Forbidden request
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  FreezeResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/FreezeResponse'
+  GetAddressOfAssetWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetAssetAddressesResponse'
+  GetAllStakingAssetsResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/StakingInfo'
+  GetAssetAddressValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid, InvalidAsset
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetAssetDetailsResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetTransferAssetDetails'
+  GetAssetValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidAsset
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetBlockchainProgressResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/BlockchainProgressResponse'
+  GetBlockchainProgressValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidAsset
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetFilterDetailsValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidOrderDirectionQuery, InvalidOrderByQuery, InvalidAsset
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetFilterResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetFilterResponse'
+  GetGroupValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetGroupWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetGroupResponse'
+  GetGroupableUsersWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetGroupableUsersResponse'
+  GetGroupsValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidOrderDirectionQuery, InvalidOrderByQuery
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetGroupsWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetGroupsResponse'
+  GetImportableSystemUsersWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetImportableSystemUsersResponse'
+  GetNotificationsWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/inline_response_200'
+  GetTransactionPolicyListWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/TransactionPolicyListResponse'
+  GetTransactionResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetTransactionResponse'
+  GetTransactionValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetTransferDataResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetTransferDetailsResponse'
+  GetUserInfoWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetUserInfoResponse'
+  GetUsersWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetUsersResponse'
+  GetVaultValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetVaultWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetVaultResponse'
+  GetVaultsValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidOrderDirectionQuery, InvalidOrderByQuery
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GetVaultsWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetVaultsResponse'
+  GroupCreatedResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GroupCreatedResponse'
+  GroupsAddUserValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: NoUsersInRequest, InvalidGuid, UserAlreadyInGroup, UserNotGroupable
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  GroupsRemoveUserValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  HealthResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/HealthResponse'
+  HideResponseWrapper:
+    description: ""
+  NotFoundResponse:
+    description: Not found
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  RegisterUserValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidUserRole, InvalidIdpUserId, InvalidUserName
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  RemoveUserResponseWrapper:
+    description: ""
+  ResetUserWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/ResetUserResponse'
+  RetryAddAddressResponseWrapper:
+    description: ""
+  RetryAddAddressValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid, InvalidAddressName
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  RevokeUserValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid, RevocationNotAllowed
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  RevokedResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/RevokeUserResponse'
+  SearchVaultsWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/SearchHiddenVaultsResponse'
+  SetExchangeRateResponseWrapper:
+    description: ""
+  SetExchangeRateValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: ExchangeRateUpdateChangesMissing, ExchangeRateUpdateAssetMissing, ExchangeRateUpdateNoCreator, ExchangeRateUpdateNegativeRate, ExchangeRateUpdateIsInProgress, ExchangeRateUpdateNotANumber, ExchangeRateUpdateMinMaxMismatch, ExchangeRateUpdateMixRangeAndRate
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  ShowTransactionsResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/ShowTransactionsResponse'
+  ShowTransactionsValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidSenderVaultId, InvalidDestinationVaultId, InvalidTransactionState, InvalidStartDate, InvalidEndDate, InvalidOrderDirectionQuery, InvalidOrderByQuery, InvalidPageQuery, InvalidPageSizeQuery, InvalidAsset
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  StakeResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/StakingResponse'
+  StakingValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidSenderVaultId, InvalidPriority, InvalidAsset, InvalidTransferFee, InvalidTransferAmount
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  SystemAddAddressValidationErrorResponseWrapper:
+    description: User input error
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  SystemAddAssetValidationErrorResponseWrapper:
+    description: User input error
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  SystemCreateAccountValidationErrorResponseWrapper:
+    description: User input error
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  SystemTransferValidationErrorResponseWrapper:
+    description: User input error
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  SystemUserEnabledResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/SystemUserEnabledResponse'
+  ThirdPartyServiceUnavailableResponse:
+    description: 3'rd party non-successful status code returned
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  TimeoutResponse:
+    description: 3'rd party Timeout
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  ToggleHiddenValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidGuid
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  TransferFundsResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/TransactionResponse'
+  TransferFundsSynchronouslyResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/TransactionSynchronousResponse'
+  TransferValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidDestinationVaultId, InvalidSenderVaultId, InvalidPriority, InvalidAsset, InvalidTransferFee, InvalidTransferAmount, InvalidDestination, InvalidERC20Gross
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  UnFreezeResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/UnFreezeResponse'
+  UnHideResponseWrapper:
+    description: ""
+  UnauthorizedResponse:
+    description: Unauthorized request
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  UpdateTransactionPolicyListErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidPolicyMinAmount, InvalidPolicyDestinationType, PolicyDestinationEmpty, InvalidPolicyNoOfApprovals, InvalidPolicyNoOfApprovalExpressions
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  VaultCreatedResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/VaultCreatedResponse'
+  ViewConfigWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/ConfigResponse'
+  addERC20AssetResponseWrapper:
+    description: ""
+  addERC20AssetResponseWrapperValidationErrorResponseWrapper:
+    description: |-
+      User input error
+      Possible errors: InvalidAssetIcon, InvalidAssetContract, ExchangeRateUpdateNegativeRate, ExchangeRateUpdateMinMaxMismatch, ExchangeRateUpdateMixRangeAndRate
+    schema:
+      $ref: '#/definitions/ProblemDetails'
+  getAllAssetsResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetSummaryOfAllAssetsResponse'
+  getAllExchangeRatesResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetAllExchangeRatesResponse'
+  getAssetResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetAssetResponse'
+  getAssetsResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/GetAssetsResponse'
+  performBackupResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/File'
+  userRegisteredResponseWrapper:
+    description: ""
+    schema:
+      $ref: '#/definitions/UserRegisteredResponse'

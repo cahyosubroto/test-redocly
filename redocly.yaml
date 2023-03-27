@@ -1,0 +1,28 @@
+# See https://redocly.com/docs/cli/configuration/ for more information.
+apis:
+  sample@v1: 
+    root: openapi/wallet.yaml
+extends:
+  - recommended
+rules:
+  no-unused-components: error
+theme:
+  openapi:
+    htmlTemplate: ./docs/index.html
+    theme:
+      colors:
+        primary:
+          main: "#32329f"
+        http:
+          get: "#4939AD"
+        responses:
+          success:
+            backgroundColor: "#00D07A12"
+            color: "#00D07A"
+    generateCodeSamples:
+      languages:  # Array of language config objects; indicates in which languages to generate code samples.
+        - lang: curl
+        - lang: Node.js
+        - lang: JavaScript
+        - lang: PHP
+        - lang: Python
