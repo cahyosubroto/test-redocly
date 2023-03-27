@@ -9,7 +9,7 @@ info:
     email: kld@mjolner.dk
   x-logo:
     url: 'https://i.postimg.cc/gJbY9cFK/logo.png'
-host: https://cahyosubroto.github.io/test-redocly/
+host: cahyosubroto.github.io
 basePath: /system/api/
 schemes:
 - https
@@ -1568,7 +1568,7 @@ paths:
     post:
       tags:
       - Transaction
-      summary: Freeze a Transaction-endpoint
+      summary: Freeze a Transaction-Endpoint
       description: Freezes transaction-endpoints, not allowing for any more transactions.
       operationId: freeze
       consumes:
@@ -1735,7 +1735,7 @@ paths:
     post:
       tags:
       - Transaction
-      summary: Unfreeze a Transaction-endpoint
+      summary: Unfreeze a Transaction-Endpoint
       description: Unfreezes transaction-endpoints, once again allowing transactions to pass through.
       operationId: unfreeze
       consumes:
